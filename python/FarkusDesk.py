@@ -197,6 +197,7 @@ class MainFrame(wx.Frame):
 	pngBitMap = wx.StaticBitmap(self, -1, png, (10, 5), (png.GetWidth(), png.GetHeight()))
 	pngBitMap.Bind( wx.EVT_LEFT_DOWN, self.__OnLeftDown) 
 	
+
 	
 	# Create menus...
         self.menubar = wx.MenuBar()
@@ -294,6 +295,9 @@ class MainFrame(wx.Frame):
         iconFile = "/home/pi/FARKUS/inc/icon.ico"
         icon1 = wx.Icon(iconFile, wx.BITMAP_TYPE_ICO)
         self.SetIcon(icon1)
+	
+	
+	
 	
 	# Show the application center in the user's screen
 	self.Centre()

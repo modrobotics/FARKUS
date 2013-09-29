@@ -5,22 +5,61 @@ class FarkusGUIProcessGraphicManager():
     def __init__(self, gui, moduleManager ):
         self.gui = gui
         self.moduleManager = moduleManager
-        
+
         self.gui.moduleCubeID = [None]*10
         self.gui.moduleName1 = [None]*10
         self.gui.moduleName2 = [None]*10
         self.gui.moduleConfigureText = [None]*10
+        self.partHolderIndicators = []
+	
+	self.failedPartPath = '/home/pi/FARKUS/inc/failedPart.png'
+	self.testingPartPath = '/home/pi/FARKUS/inc/testingPart.png'
+	self.passedPartPath = '/home/pi/FARKUS/inc/passedPart.png'
+        
+	self.failedPartBitmap = wx.Image(self.failedPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+	self.testingPartBitmap = wx.Image(self.testingPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+	self.passedPartBitmap = wx.Image(self.passedPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+
+        # Configure which icon the part holders get during init
+        self.defaultPartBitmap = self.passedPartBitmap
         
         # Setup!
         self.InitGUI()
+        
+        self.markPartHolderStatus(0,"TESTING");
+        self.markPartHolderStatus(2,"TESTING");
+        self.markPartHolderStatus(4,"TESTING");
+        self.markPartHolderStatus(6,"TESTING");
+        self.markPartHolderStatus(8,"TESTING");
+        self.markPartHolderStatus(10,"TESTING");
+        
     
     def setModuleManager(self, manager):
         self.moduleManager = manager
     
+    # this is a graphical primitive...needs a managing function to do shifting:::: use deque
+    def markPartHolderStatus(self, holderIndex, status): # TODO: ENUMs here
+        if(status == "TESTING"):            
+            # HELL YES this works.  The wx bitmap library is a little strange (can't simply assign bitmaps to an array?).
+            # There's an hour of my life I'll never get back
+            self.partHolderIndicators[holderIndex].SetBitmap(self.testingPartBitmap)
+        elif ( status == "FAILED" ):
+            self.partHolderIndicators[holderIndex].SetBitmap(self.failedPartBitmap)
+        elif ( status == "PASSED" ):
+            self.partHolderIndicators[holderIndex].SetBitmap(self.passedPartBitmap)
+        pass
+    
     def InitGUI(self):
-        
-        # Insert the placeholder labels
-        
+        # Create the images to mark part holders
+	# cells in image aren't spaced on the python grid...wing it!
+	offset = 0
+        for i in range(0,11):
+		part = wx.StaticBitmap(self.gui, -1, self.defaultPartBitmap, ((119+(i*51)+offset), 296), (self.defaultPartBitmap.GetWidth(), self.defaultPartBitmap.GetHeight())) #+51
+		self.partHolderIndicators.append(part)
+		if( i%2 == 1 ):
+			offset +=1
+	
+	
         # Create textfields for Cubelet IDs
 	self.gui.moduleCubeID[1] = wx.StaticText(self.gui, -1, '---------', pos=(105,248))
 	self.gui.moduleCubeID[2] = wx.StaticText(self.gui, -1, '---------', pos=(208,248))
