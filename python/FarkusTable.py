@@ -2,6 +2,8 @@ import FarkusModuleManager
 import FarkusModuleTypeManager
 import FarkusConveyance
 import FarkusPartTypeManager
+import FarkusTestType
+import FarkusTestTypeManager
 
 class FarkusTable():
     "Class to define the ACTUAL FARKUS Table"
@@ -13,7 +15,8 @@ class FarkusTable():
 	self.moduleTypeManager = FarkusModuleTypeManager.FarkusModuleTypeManager();
 	self.partTypeManager = FarkusPartTypeManager.FarkusPartTypeManager();
 	self.moduleManager = FarkusModuleManager.FarkusModuleManager();
-        
+ 	self.testTypeManager = FarkusTestTypeManager.FarkusTestTypeManager();
+       
         # Initialize Conveyance
         self.conveyance = FarkusConveyance.FarkusConveyance(False, self.partTypeManager, self.gui) #this should be reworked to extend the "module" class and not have to be instanciated before it's ready to install
     

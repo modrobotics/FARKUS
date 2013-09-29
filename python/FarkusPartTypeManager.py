@@ -6,8 +6,21 @@ class FarkusPartTypeManager():
         self.partTypes = []
         
         # TODO: Load these from a shelf.  For now we'll statically define them
-        self.partTypes.append(FarkusPartType.FarkusPartType(1, "Cubelet: Brightness", None))
-        self.partTypes.append(FarkusPartType.FarkusPartType(2, "Cubelet: Flashlight", None))
+        cubeRequiredTests = []
+        cubeRequiredTests.append(1) # Get Cubelet ID
+        cubeRequiredTests.append(2) # Test Power Transfer capabilities
+        cubeRequiredTests.append(3) # Test Application Code Communication Capabilities (implies test should be run after Flashing)
+        cubeRequiredTests.append(4) # Flash Brightness Cubelet Firmware
+        cubeRequiredTests.append(5) # Brightness Cubelet Functional Test
+        self.partTypes.append(FarkusPartType.FarkusPartType(1, "Cubelet: Brightness", cubeRequiredTests))
+        
+        cubeRequiredTests = []
+        cubeRequiredTests.append(1) # Get Cubelet ID
+        cubeRequiredTests.append(2) # Test Power Transfer capabilities
+        cubeRequiredTests.append(3) # Test Application Code Communication Capabilities (implies test should be run after Flashing)...technically this should be different for different block types...again, another day.
+        cubeRequiredTests.append(6) # Flash Flashlight Cubelet Firmware
+        cubeRequiredTests.append(7) # Brightness Cubelet Functional Test
+        self.partTypes.append(FarkusPartType.FarkusPartType(2, "Cubelet: Flashlight", cubeRequiredTests))
         
 
     # returns partType object if found, False if not.
