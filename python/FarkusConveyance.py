@@ -15,8 +15,8 @@ class FarkusConveyance():
 	self.partHolderCount = 11
 	self.partHolderPitch = None
 	
-	self.attachedParts = deque([], 11) # init deque
-	for i in range(0,10):
+	self.attachedParts = deque([], (self.partHolderCount+1)) # init deque with extra spot for shifting
+	for i in range(0,self.partHolderCount):
 		self.insertEmptyPartHolder()
 	
 	self.serialPortIdentifier = serialPortIdentifier
@@ -41,8 +41,11 @@ class FarkusConveyance():
         # Set self to false
         pass
     
+    # adds the part, shifts the parts in the attachedParts array, advances the conveyance
     def insertNewPart(self, partTypeId):
 	self.attachedParts.appendleft(FarkusPart.FarkusPart( self.partTypeManager.getPartTypeById(partTypeId) ) )
+	self.removePartOnExit()
+	self.advanceForward()
 	pass
 	
     def insertEmptyPartHolder(self):
@@ -63,8 +66,13 @@ class FarkusConveyance():
 	#TODO: check for echo and bool return
         return True;
     
+    def advanceForward(self):
+	self.setConfigState(0)  # Go forward TODO: constants for commands
+	self.go()
+    
     def eStop(self):
         #Command to serial, bool
+	self.serialWorker.write("ESTOP")
         pass
     
     def blinkForID(self):
@@ -73,6 +81,7 @@ class FarkusConveyance():
     
     def getActualModuleId(self):
         #command to serial return
+	self.serialWorker.write("I")
         pass
     
     def getName(self):
