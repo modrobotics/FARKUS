@@ -165,7 +165,7 @@ class MainFrame(wx.Frame):
 	wx.Frame.__init__(self, parent, id, 'Modular Robotics FARKUS Desk v0.1', size=(935,525), style= wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
 	
 	# Set window BG Color to match BG of logo image
-	self.SetBackgroundColour((243,240,233))
+	self.SetBackgroundColour((203,226,244))
 	
 	# Add the FARKUS Background
 	backgroundPath = '/home/pi/FARKUS/inc/background.png'
