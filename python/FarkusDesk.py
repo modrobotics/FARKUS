@@ -1,3 +1,4 @@
+#!/usr/bin/python
 from threading import *
 import wx
 from time import sleep
