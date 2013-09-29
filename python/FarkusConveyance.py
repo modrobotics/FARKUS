@@ -61,6 +61,11 @@ class FarkusConveyance():
 	
 	def removePartOnExit(self):
 		removedPart = self.attachedParts.pop()
+		if removedPart is not None:
+			# There's actually a part on this holder
+			# TODO: Log this somewhere intelligent
+			self.gui.LogToGUI("Part on Exit Module (6) is a " + removedPart.getStatus())
+		
 		pass
 
 	def getConnectedPartByPartHolder(self, holderIndex):

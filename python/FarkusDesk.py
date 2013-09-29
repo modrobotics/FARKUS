@@ -112,6 +112,8 @@ class MainFrame(wx.Frame):
 	else:
 		pass
 
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+
 	return True
 
     def onStart( self, event ):
