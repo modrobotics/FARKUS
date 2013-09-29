@@ -11,7 +11,9 @@ factory automation project, here's how you'll get your Pi set up to use FARKUS D
 
 1. Start from a vanilla distro of Raspbian.  Download from: http://downloads.raspberrypi.org/raspbian_latest 
 2. Get apt-get up-to-date:
+        ```
         sudo apt-get update
+        ```
 3. Install wxPython 2.8 for Python 2.7 (Python 2.7 itself is installed by default):
         sudo apt-get install python-wxgtk2.8 python-wxtools wx2.8-i18n libwxgtk2.8-dev
 4. Install pyserial.
