@@ -5,6 +5,9 @@ class FarkusPartType():
         self.name = name
         self.requiredTests = requiredTests
         
+    def getId(self):
+        return self.id
+    
     def getName(self):
         return self.name
     

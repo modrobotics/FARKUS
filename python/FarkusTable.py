@@ -1,6 +1,7 @@
 import FarkusModuleManager
 import FarkusModuleTypeManager
 import FarkusConveyance
+import FarkusPartTypeManager
 
 class FarkusTable():
     "Class to define the ACTUAL FARKUS Table"
@@ -9,15 +10,25 @@ class FarkusTable():
         self.gui = gui
         
         # Initialize FARKUS Manager Singletons
-	self.conveyance = FarkusConveyance.FarkusConveyance(False) #this should be reworked to extend the "module" class and not have to be instanciated before it's ready to install
 	self.moduleTypeManager = FarkusModuleTypeManager.FarkusModuleTypeManager();
+	self.partTypeManager = FarkusPartTypeManager.FarkusPartTypeManager();
 	self.moduleManager = FarkusModuleManager.FarkusModuleManager();
+        
+        # Initialize Conveyance
+        self.conveyance = FarkusConveyance.FarkusConveyance(False, self.partTypeManager) #this should be reworked to extend the "module" class and not have to be instanciated before it's ready to install
+
         
     def setConveyance(self, conveyance):
         self.convenyance = conveyance
     
     def getConveyance(self):
         return self.conveyance
+    
+    def setPartTypeManager(self, manager):
+        self.partTypeManager = manager
+    
+    def getPartTypeManager(self):
+        return self.partTypeManager
     
     def setModuleTypeManager(self, manager):
         self.moduleTypeManager = manager

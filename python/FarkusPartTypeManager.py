@@ -6,10 +6,15 @@ class FarkusPartTypeManager():
         self.partTypes = []
         
         # TODO: Load these from a shelf.  For now we'll statically define them
-        self.partTypes.append(FarkusModuleType.FarkusModuleType(1, "Cubelet: Brightness", None))
-        self.partTypes.append(FarkusModuleType.FarkusModuleType(2, "Cubelet: Flashlight", None))
+        self.partTypes.append(FarkusPartType.FarkusPartType(1, "Cubelet: Brightness", None))
+        self.partTypes.append(FarkusPartType.FarkusPartType(2, "Cubelet: Flashlight", None))
         
-    def getModuleByLocation(self, location):
-        pass
-        
+
+    # returns partType object if found, False if not.
+    def getPartTypeById(self, id):
+        for partType in self.partTypes:
+            if( partType.getId() == id):
+                return partType
+        return False;
+            
    
