@@ -15,7 +15,7 @@ class FarkusTable():
 	self.moduleManager = FarkusModuleManager.FarkusModuleManager();
         
         # Initialize Conveyance
-        self.conveyance = FarkusConveyance.FarkusConveyance(False, self.partTypeManager) #this should be reworked to extend the "module" class and not have to be instanciated before it's ready to install
+        self.conveyance = FarkusConveyance.FarkusConveyance(False, self.partTypeManager, self.gui) #this should be reworked to extend the "module" class and not have to be instanciated before it's ready to install
 
         
     def setConveyance(self, conveyance):

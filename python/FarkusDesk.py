@@ -84,6 +84,44 @@ class ConfigModuleEvent(wx.PyEvent):
 class MainFrame(wx.Frame):
     def onPause( self, event ):
 	self.LogToGUI("PAUSE")
+	
+	try:
+		for i in range(0,11):  # 11 part holders
+			if self.farkusTable.getConveyance().getConnectedParts()[i] is not None:
+				self.LogToGUI("Part Holder #" + str(i) + " has " + self.farkusTable.getConveyance().getConnectedParts()[i].getPartType().getName())
+			else:
+				self.LogToGUI("Part Holder #" + str(i) + " is empty")
+	except:
+		pass
+	
+	self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+
+	try:
+		for i in range(0,11):  # 11 part holders
+			if self.farkusTable.getConveyance().getConnectedParts()[i] is not None:
+				self.LogToGUI("Part Holder #" + str(i) + " has " + self.farkusTable.getConveyance().getConnectedParts()[i].getPartType().getName())
+			else:
+				self.LogToGUI("Part Holder #" + str(i) + " is empty")
+	except:
+		pass
 
 	
     def onStart( self, event ):

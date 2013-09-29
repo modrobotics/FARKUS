@@ -14,6 +14,9 @@ class FarkusPart():
     def setSerialNumber(self, sn):
         self.serialNumber = sn
     
+    def getSerialNumber(self):
+        return self.serialNumber
+    
     def addTestResult(self, result):
         self.testResults.append(result)
     
