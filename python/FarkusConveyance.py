@@ -70,11 +70,19 @@ class FarkusConveyance():
 	self.setConfigState(0)  # Go forward TODO: constants for commands
 	self.go()
     
+    def advanceBackward(self):
+	self.setConfigState(1)  # Go backward TODO: constants for commands
+	self.go()
+
     def eStop(self):
         #Command to serial, bool
 	self.serialWorker.write("ESTOP")
         pass
     
+    def configModule(self, state):
+        self.serialWorker.write("C" + self.configState)
+        return True
+
     def blinkForID(self):
         #Command to serial, bool
         pass
@@ -94,7 +102,9 @@ class FarkusConveyance():
         return self.configState
 
     def setConfigState(self, configState):
-        self.configState = configState
+	if(configState != self.configState):
+		self.configState = configState
+		self.configModule(configState)
     
     def getIsReady(self):
         return self.isReady
