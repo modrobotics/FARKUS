@@ -83,23 +83,37 @@ class ConfigModuleEvent(wx.PyEvent):
 # GUI Frame class that spins off the worker thread
 class MainFrame(wx.Frame):
     def onPause( self, event ):
-	self.LogToGUI("PAUSE")
 	
+	self.LogToGUI("System entering paused state")
+	self.farkusTable.pause()
+	
+	# for testing part tracking
 	self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
 	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
 	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
 	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
 	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	#try:
-	#	for i in range(0,11):  # 11 part holders
-	#		if self.farkusTable.getConveyance().getConnectedParts()[i] is not None:
-	#			self.LogToGUI("Part Holder #" + str(i) + " has " + self.farkusTable.getConveyance().getConnectedParts()[i].getPartType().getName())
-	#		else:
-	#			self.LogToGUI("Part Holder #" + str(i) + " is empty")
-	#except:
-	#	pass
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
 
+	temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(1)
+	if temp:
+		temp.setStatus("FAILED")
+		self.processGraphicManager.updateAll()
+	else:
+		pass
 	
+	temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(7)
+	if temp:
+		temp.setStatus("PASSED")
+		self.processGraphicManager.updateAll()
+	else:
+		pass
+
+	return True
+
     def onStart( self, event ):
 	self.OnOpenSerial(False);  # Discover Modules, establish connections
 	pass
@@ -164,6 +178,11 @@ class MainFrame(wx.Frame):
     def __init__(self, parent, id):
 	wx.Frame.__init__(self, parent, id, 'Modular Robotics FARKUS Desk v0.1', size=(935,535), style= wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
 	
+	
+	# Initialize FARKUS Manager Singletons
+	self.farkusTable = FarkusTable.FarkusTable(self);
+	
+	
 	# Set window BG Color to match BG of logo image
 	self.SetBackgroundColour((203,226,244))
 	
@@ -173,12 +192,11 @@ class MainFrame(wx.Frame):
 	pngBitMap = wx.StaticBitmap(self, -1, png, (10, 5), (png.GetWidth(), png.GetHeight()))
 	pngBitMap.Bind( wx.EVT_LEFT_DOWN, self.__OnLeftDown) 
 	
-
-	
 	# Create menus...
         self.menubar = wx.MenuBar()
         self.fileMenu = wx.Menu()
         self.optionsMenu = wx.Menu()
+        self.partsMenu = wx.Menu()
 
         self.serialSubMenu = wx.Menu()
         self.openSerialItem = wx.MenuItem(self.serialSubMenu, ID_OPTIONS_OPENSERIAL, 'Discover and Connect', 'Open a connection to a FARKUS Array')
@@ -198,8 +216,18 @@ class MainFrame(wx.Frame):
         self.quitItem = wx.MenuItem(self.fileMenu, wx.ID_EXIT, '&Quit', 'Exit the Modular Robotics FARKUS Desk')
         self.fileMenu.AppendItem(self.quitItem)
         
+	
+	self.cubeletsSubMenu = wx.Menu()
+	# Initialize Part Type menu with items
+	for partType in self.farkusTable.getPartTypeManager().getPartTypes():
+		partMenuItem = wx.MenuItem(self.cubeletsSubMenu, ID_OPTIONS_OPENSERIAL, partType.getName(), '')
+		self.cubeletsSubMenu.AppendItem(partMenuItem)
+
+	self.partsMenu.AppendMenu(ID_OPTIONS_CAROUSEL, 'Cubelets', self.cubeletsSubMenu)
+
         self.menubar.Append(self.fileMenu, '&File')
         self.menubar.Append(self.optionsMenu, '&Options')
+        self.menubar.Append(self.partsMenu, '&Parts')
         self.SetMenuBar(self.menubar)
 	
 	
@@ -278,9 +306,6 @@ class MainFrame(wx.Frame):
 	# Show the application center in the user's screen
 	self.Centre()
 	
-	
-	# Initialize FARKUS Manager Singletons
-	self.farkusTable = FarkusTable.FarkusTable(self);
 	
 	self.processGraphicManager.setModuleManager(self.farkusTable.getModuleManager())
 	

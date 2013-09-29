@@ -16,7 +16,9 @@ class FarkusTable():
         
         # Initialize Conveyance
         self.conveyance = FarkusConveyance.FarkusConveyance(False, self.partTypeManager, self.gui) #this should be reworked to extend the "module" class and not have to be instanciated before it's ready to install
-
+    
+        # Initialize State
+        self.state = "OFFLINE"
         
     def setConveyance(self, conveyance):
         self.convenyance = conveyance
@@ -44,14 +46,17 @@ class FarkusTable():
     
     def pause(self):
         #update status variable...should this be pausing modules?
+        self.status = "PAUSED"
         pass
     
     def start(self):
         #update status variable
+        self.status = "RUNNING"
         pass
     
     def eStop(self, ):
         #update status variable
+        self.status = "ESTOP"
         pass
     
     

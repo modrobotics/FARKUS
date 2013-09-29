@@ -31,7 +31,7 @@ class FarkusGUIProcessGraphicManager():
 	self.unknownPartBitmap = wx.Image(self.unknownPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
         # Configure which icon the part holders get during init
-        self.defaultPartBitmap = self.testingPartBitmap
+        self.defaultPartBitmap = self.emptyPartBitmap
         
         # Setup!
         self.InitGUI()
@@ -50,6 +50,10 @@ class FarkusGUIProcessGraphicManager():
                 self.partHolderIndicators[holderIndex].SetBitmap(self.failedPartBitmap)
             elif ( status == "PASSED" ):
                 self.partHolderIndicators[holderIndex].SetBitmap(self.passedPartBitmap)
+            elif ( status == "EMPTY" ):
+                self.partHolderIndicators[holderIndex].SetBitmap(self.emptyPartBitmap)
+            elif ( status == "UNKNOWN" ):
+                self.partHolderIndicators[holderIndex].SetBitmap(self.unknownPartBitmap)
             pass
         except:
             pass
@@ -113,6 +117,9 @@ class FarkusGUIProcessGraphicManager():
                 # This position is empty
                 self.gui.moduleName1[i].SetLabel('No Module')
                 self.gui.moduleName2[i].SetLabel('Connected')
+                
+            # Force the GUI to update right now...
+            self.gui.Update()
     
     def updatePartInformation(self):
         
@@ -121,15 +128,19 @@ class FarkusGUIProcessGraphicManager():
         
             if (part is None):
                 # No part here. Mark it.
-                self.markPartHolderStatus(index, "FAILED")
+                self.markPartHolderStatus(index, "EMPTY")
                 #self.gui.LogToGUI("index " + str(index) + " has no part")
             else:
                 #we have a part
                 #status = part.getStatus()
                 #self.markPartHolderStatus(index, status)
-                self.markPartHolderStatus(index, "PASSED")
+                self.markPartHolderStatus(index, part.getStatus())
                 #self.gui.LogToGUI("index " + str(index) + " has " + part.getPartType().getName() )
             # increment the index regardless
             index+=1
+            
+            # Force the GUI to update right now...
+            self.gui.Update()
+
         
         

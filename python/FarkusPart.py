@@ -7,7 +7,7 @@ class FarkusPart():
         self.partType = partType
         self.testResults = []
         self.serialNumber = None # Use for Cubelet ID
-        self.status = "TESTING"
+        self.status = "UNKNOWN" # We don't know what this part's status is yet.
         
     def getStatus(self):
         return self.status

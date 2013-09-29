@@ -16,5 +16,8 @@ class FarkusPartTypeManager():
             if( partType.getId() == id):
                 return partType
         return False;
-            
+    
+    def getPartTypes(self, ):  # should add a "part family" to the partType class to make separating cubelets/EYVO/tesla motors products easy
+        return self.partTypes
+    
    
