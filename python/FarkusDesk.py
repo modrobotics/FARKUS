@@ -37,6 +37,8 @@ SETTINGS_DEFAULTS = dict([
 ID_START = wx.NewId()
 ID_PAUSE = wx.NewId()
 ID_ESTOP = wx.NewId()
+ID_ADVANCE = wx.NewId()
+ID_ADDPART = wx.NewId()
 
 # Menu Button Definitions
 ID_OPTIONS_EDITSETTINGS = wx.NewId()
@@ -88,9 +90,8 @@ class MainFrame(wx.Frame):
 	self.farkusTable.pause()
 	
 	# for testing part tracking
-	self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
 	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
 	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
 	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
 	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
@@ -101,24 +102,33 @@ class MainFrame(wx.Frame):
 	temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(0)
 	if temp:
 		temp.setSerialNumber("999201")
-		temp.setStatus("FAILED")
+		#temp.setStatus("FAILED")
 		self.processGraphicManager.updateAll()
 	else:
 		pass
 	
-	temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(7)
-	if temp:
-		temp.setStatus("PASSED")
-		self.processGraphicManager.updateAll()
-	else:
-		pass
+	#temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(7)
+	#if temp:
+#		temp.setStatus("PASSED")
+	#	self.processGraphicManager.updateAll()
+	#else:
+#		pass
 
 	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
 
 	return True
 
+    
+    def onAdvance( self, event ):
+	self.farkusTable.getConveyance().insertEmptyPartHolder() # empty part holder
+	pass
+    
+    def onAddPart( self, event ):
+	self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
+	pass
+	
     def onStart( self, event ):
-	self.OnOpenSerial(False);  # Discover Modules, establish connections
+	self.OnOpenSerial(False);  # Discover Modules, establish connections	
 	pass
 	
     def onEstop( self, event ):
@@ -244,15 +254,26 @@ class MainFrame(wx.Frame):
 	#self.eStopButton.Disable()
 	
 	# Create PAUSE Button!
-	self.pauseButton = wx.Button(self, ID_PAUSE, "PAUSE", pos=(721, 165), size=(200,145))
-	self.pauseButton.SetBackgroundColour('#FCD116')
-	#self.pauseButton.Disable()
+	##self.pauseButton = wx.Button(self, ID_PAUSE, "PAUSE", pos=(721, 165), size=(200,145))  # later, for when it's all automated
+	##self.pauseButton.SetBackgroundColour('#FCD116')
+	
 	
 	# Create START Button!
 	self.startButton = wx.Button(self, ID_START, "START", pos=(721, 320), size=(200,145))
 	self.startButton.SetBackgroundColour('#009900')
 	#self.startButton.Disable()
 	
+	# Create ADVANCE Button!
+	self.advanceButton = wx.Button(self, ID_ADVANCE, "Advance", pos=(721, 165), size=(200,67))
+	self.advanceButton.SetBackgroundColour('#FCD116')
+	#self.pauseButton.Disable()
+	
+	# Create Add Part Button!
+	self.addPartButton = wx.Button(self, ID_PAUSE, "Add Part", pos=(721, 242), size=(200,67))
+	self.addPartButton.SetBackgroundColour('#FCD116')
+	#self.pauseButton.Disable()
+	
+    
 	# Add the Modrobotics Logo
 	#logoPath = '/home/pi/FARKUS/inc/logo.jpg'
         #logoBitmap = wx.Image(logoPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
@@ -273,8 +294,10 @@ class MainFrame(wx.Frame):
         	
         
         self.startButton.Bind(wx.EVT_BUTTON, self.onStart)
-        self.pauseButton.Bind(wx.EVT_BUTTON, self.onPause)
+        #self.pauseButton.Bind(wx.EVT_BUTTON, self.onPause)  #save for later!
         self.eStopButton.Bind(wx.EVT_BUTTON, self.onEstop)
+        self.advanceButton.Bind(wx.EVT_BUTTON, self.onAdvance)
+        self.addPartButton.Bind(wx.EVT_BUTTON, self.onAddPart)
 
 	# Variable to hold worker threads
         self.serialWorkers = []
