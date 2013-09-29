@@ -4,25 +4,28 @@ import SerialResultEventHandler
 import FarkusPart
 import FarkusPartTypeManager
 import FarkusPartType
+from collections import deque
 
 class FarkusConveyance():
     "Class to define the Conveyance on a FARKUS Table"
     def __init__(self, serialPortIdentifier, partTypeManager):
-        self.isReady=False
         
-        self.configState = None
-	self.attachedParts = []
+	self.name = "***FARKUS-Conveyance"
+	self.serialIDString = "`0000"
 	self.partHolderCount = 11
 	self.partHolderPitch = None
-	self.serialIDString = "`0000"
-	self.name = "***FARKUS-Conveyance"
+	
+	self.attachedParts = deque([], 11) # init deque
+	for i in range(0,10):
+		self.insertEmptyPartHolder()
 	
 	self.serialPortIdentifier = serialPortIdentifier
 	self.serialWorker = None
-        self.isConnected = False
-	
+	self.isConnected = False
+	self.isReady=False
+	self.configState = None		
 	self.partTypeManager = partTypeManager
-        
+
         # Setup Serial, connect, set isConnected via function
         
         # Wait for RDY, set is_ready, is_ready event
@@ -39,9 +42,20 @@ class FarkusConveyance():
         pass
     
     def insertNewPart(self, partTypeId):
-	#attachedParts.append(FarkusPart.FarkusPart( self.partTypeManager.getPartTypeById(partTypeId) ) )
+	self.attachedParts.appendleft(FarkusPart.FarkusPart( self.partTypeManager.getPartTypeById(partTypeId) ) )
 	pass
-
+	
+    def insertEmptyPartHolder(self):
+	self.attachedParts.appendleft(None)
+	pass
+	
+    def removePartOnExit(self):
+	removedPart = self.attachedParts.pop()
+	pass
+ 
+    def getConnectedParts(self):
+	return self.attachedParts
+    
     def go(self):
         #Command to serial, bool
 	self.serialWorker.write("GO")

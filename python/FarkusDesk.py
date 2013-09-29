@@ -84,8 +84,8 @@ class ConfigModuleEvent(wx.PyEvent):
 class MainFrame(wx.Frame):
     def onPause( self, event ):
 	self.LogToGUI("PAUSE")
-	pass
-		
+
+	
     def onStart( self, event ):
 	self.OnOpenSerial(False);  # Discover Modules, establish connections
 	pass
