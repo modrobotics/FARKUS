@@ -7,7 +7,14 @@ class FarkusPart():
         self.partType = partType
         self.testResults = []
         self.serialNumber = None # Use for Cubelet ID
+        self.status = "TESTING"
         
+    def getStatus(self):
+        return self.status
+    
+    def setStatus(self, status):
+        self.status = status
+    
     def getPartType(self):
         return self.partType
     

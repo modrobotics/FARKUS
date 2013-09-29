@@ -1,4 +1,6 @@
 import wx
+from collections import deque
+
 
 class FarkusGUIProcessGraphicManager():
     "Class to define the some helper functions to manage the process graphic"
@@ -12,43 +14,45 @@ class FarkusGUIProcessGraphicManager():
         self.gui.moduleConfigureText = [None]*10
         self.partHolderIndicators = []
 	
+        #self.partHolderIndicators = deque([]) # init deque with extra spot for shifting
+	#for i in range(0,self.gui.farkusTable.getConveyance().getPartHolderCount()+1):
+	#	self.insertEmptyPartHolder()
+                
 	self.failedPartPath = '/home/pi/FARKUS/inc/failedPart.png'
 	self.testingPartPath = '/home/pi/FARKUS/inc/testingPart.png'
-	self.passedPartPath = '/home/pi/FARKUS/inc/passedPart.png'
-        
+	self.passedPartPath = '/home/pi/FARKUS/inc/passedPart.png'       #Eventually real part images could go here
+    	self.emptyPartPath = '/home/pi/FARKUS/inc/emptyPart.png'
+	self.unknownPartPath = '/home/pi/FARKUS/inc/unknownPart.png'
+
 	self.failedPartBitmap = wx.Image(self.failedPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 	self.testingPartBitmap = wx.Image(self.testingPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 	self.passedPartBitmap = wx.Image(self.passedPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+	self.emptyPartBitmap = wx.Image(self.emptyPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
+	self.unknownPartBitmap = wx.Image(self.unknownPartPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 
         # Configure which icon the part holders get during init
-        self.defaultPartBitmap = self.passedPartBitmap
+        self.defaultPartBitmap = self.testingPartBitmap
         
         # Setup!
         self.InitGUI()
-        
-        self.markPartHolderStatus(0,"TESTING");
-        self.markPartHolderStatus(2,"TESTING");
-        self.markPartHolderStatus(4,"TESTING");
-        self.markPartHolderStatus(6,"TESTING");
-        self.markPartHolderStatus(8,"TESTING");
-        self.markPartHolderStatus(10,"TESTING");
-        
     
     def setModuleManager(self, manager):
         self.moduleManager = manager
     
     # this is a graphical primitive...needs a managing function to do shifting:::: use deque
     def markPartHolderStatus(self, holderIndex, status): # TODO: ENUMs here
-        if(status == "TESTING"):            
-            # HELL YES this works.  The wx bitmap library is a little strange (can't simply assign bitmaps to an array?).
-            # There's an hour of my life I'll never get back
-            self.partHolderIndicators[holderIndex].SetBitmap(self.testingPartBitmap)
-        elif ( status == "FAILED" ):
-            self.partHolderIndicators[holderIndex].SetBitmap(self.failedPartBitmap)
-        elif ( status == "PASSED" ):
-            self.partHolderIndicators[holderIndex].SetBitmap(self.passedPartBitmap)
-        pass
-    
+        try:
+            if(status == "TESTING"):            
+                # HELL YES this works.  The wx bitmap library is a little strange (can't simply assign bitmaps to an array?).
+                # There's an hour of my life I'll never get back
+                self.partHolderIndicators[holderIndex].SetBitmap(self.testingPartBitmap)
+            elif ( status == "FAILED" ):
+                self.partHolderIndicators[holderIndex].SetBitmap(self.failedPartBitmap)
+            elif ( status == "PASSED" ):
+                self.partHolderIndicators[holderIndex].SetBitmap(self.passedPartBitmap)
+            pass
+        except:
+            pass
     def InitGUI(self):
         # Create the images to mark part holders
 	# cells in image aren't spaced on the python grid...wing it!
@@ -112,54 +116,20 @@ class FarkusGUIProcessGraphicManager():
     
     def updatePartInformation(self):
         
-        #for i in range(1,11):
-           
-
-            try:
-                for i in range(0,11):  # 11 part holders
-                    part = self.gui.farkusTable.getConveyance().getConnectedParts()[i]
-
-                    if i == 0:
-                        moduleLocation = 1
-                    elif i == 2:
-                        moduleLocation = 2
-                    elif i == 4:
-                        moduleLocation = 3
-                    elif i == 6:
-                        moduleLocation = 4
-                    elif i == 8:
-                        moduleLocation = 5
-                    elif i == 10:
-                        moduleLocation = 6
-                    else:
-                        moduleLocation = None
-		    
-                    if part is not None:
-                        if moduleLocation is not None:
-                                self.gui.moduleCubeID[moduleLocation].SetLabel(str(part.getSerialNumber()))
-                                #self.LogToGUI("Part Holder #" + str(i) + " has " + self.farkusTable.getConveyance().getConnectedParts()[i].getPartType().getName())
-                        elif moduleLocation is not None:
-                                #self.LogToGUI("Part Holder #" + str(i) + " is empty")
-                                #self.gui.moduleCubeID[moduleLocation].SetLabel("---------" + str(i))
-                                pass
-                
-            #if(partHolder is not None):
-            #    # There is a part on this part holder,
-            #    if(moduleLocation is not None):
-            #        # and this holder is in a module
-            #        sn = partHolder.getSerialNumber()
-            #        if(sn is not None):
-            #            # serial number known
-            #            self.gui.moduleCubeID[moduleLocation].SetLabel(str(sn))
-            #        else:
-            #            # We don't know the serial Number of this part
-            #            self.gui.moduleCubeID[moduleLocation].SetLabel(partHolder.getName())
-            #    else:
-            #        # There is a part here, but it's not in a module
-            ##        pass
-            #else:
-                # This position is empty
-                #self.gui.moduleCubeID[modu].SetLabel("---------" + str(i))
-            #    pass
-            except:
-                pass
+        for index in range(0,11):
+            part = self.gui.farkusTable.getConveyance().getConnectedParts()[index]
+        
+            if (part is None):
+                # No part here. Mark it.
+                self.markPartHolderStatus(index, "FAILED")
+                #self.gui.LogToGUI("index " + str(index) + " has no part")
+            else:
+                #we have a part
+                #status = part.getStatus()
+                #self.markPartHolderStatus(index, status)
+                self.markPartHolderStatus(index, "PASSED")
+                #self.gui.LogToGUI("index " + str(index) + " has " + part.getPartType().getName() )
+            # increment the index regardless
+            index+=1
+        
+        

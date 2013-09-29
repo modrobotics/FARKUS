@@ -15,7 +15,7 @@ class FarkusConveyance():
 	self.partHolderCount = 11
 	self.partHolderPitch = None
 	
-	self.attachedParts = deque([], (self.partHolderCount+2)) # init deque with extra spot for shifting
+	self.attachedParts = deque([]) # init deque with extra spot for shifting
 	for i in range(0,self.partHolderCount+1):
 		self.insertEmptyPartHolder()
 	
@@ -45,14 +45,19 @@ class FarkusConveyance():
     # adds the part, shifts the parts in the attachedParts array, advances the conveyance
     def insertNewPart(self, partTypeId):
 	self.attachedParts.appendleft(FarkusPart.FarkusPart( self.partTypeManager.getPartTypeById(partTypeId) ) )
-	self.removePartOnExit()
 	self.advanceForward()
+	self.removePartOnExit()
 	self.gui.processGraphicManager.updatePartInformation()
 	pass
 	
     def insertEmptyPartHolder(self):
-	self.attachedParts.appendleft(None)
-	pass
+	try:
+		self.attachedParts.appendleft(None)
+		self.advanceForward()
+		self.removePartOnExit()
+		self.gui.processGraphicManager.updatePartInformation()
+	except Exception:
+		pass
 	
     def removePartOnExit(self):
 	removedPart = self.attachedParts.pop()
