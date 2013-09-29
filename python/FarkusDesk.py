@@ -162,7 +162,7 @@ class MainFrame(wx.Frame):
 	return False
     
     def __init__(self, parent, id):
-	wx.Frame.__init__(self, parent, id, 'Modular Robotics FARKUS Desk v0.1', size=(935,525), style= wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
+	wx.Frame.__init__(self, parent, id, 'Modular Robotics FARKUS Desk v0.1', size=(935,535), style= wx.SYSTEM_MENU | wx.CAPTION | wx.CLOSE_BOX)
 	
 	# Set window BG Color to match BG of logo image
 	self.SetBackgroundColour((203,226,244))
