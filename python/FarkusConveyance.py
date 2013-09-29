@@ -12,7 +12,7 @@ class FarkusConveyance():
         
 		self.name = "***FARKUS-Conveyance"
 		self.serialIDString = "`0000"
-		self.partHolderCount = 11
+		self.partHolderCount = 10  # one less than actual so that pop()'s occur on the exit ramp
 		self.partHolderPitch = None
 		
 		self.attachedParts = deque([]) # init deque with extra spot for shifting
@@ -45,8 +45,8 @@ class FarkusConveyance():
 	# adds the part, shifts the parts in the attachedParts array, advances the conveyance
 	def insertNewPart(self, partTypeId):
 		self.attachedParts.appendleft(FarkusPart.FarkusPart( self.partTypeManager.getPartTypeById(partTypeId) ) )
-		self.advanceForward()
 		self.removePartOnExit()
+		self.advanceForward()
 		self.gui.processGraphicManager.updatePartInformation()
 		pass
 		
@@ -64,14 +64,17 @@ class FarkusConveyance():
 		if removedPart is not None:
 			# There's actually a part on this holder
 			# TODO: Log this somewhere intelligent
-			self.gui.LogToGUI("Part on Exit Module (6) is a " + removedPart.getStatus())
+			self.gui.LogToGUI("Part on Exit Module (6) with Serial Number # " + str(removedPart.getSerialNumber()) + " " + removedPart.getStatus())
 		
 		pass
 
 	def getConnectedPartByPartHolder(self, holderIndex):
-		foundPart = self.attachedParts[holderIndex]
+		try:
+			foundPart = self.attachedParts[holderIndex]
 		#if(foundPart is not None):
-		return foundPart
+			return foundPart
+		except:
+			pass
 		#else:
 		#	return False
 		

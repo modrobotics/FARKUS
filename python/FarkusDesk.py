@@ -89,17 +89,18 @@ class MainFrame(wx.Frame):
 	
 	# for testing part tracking
 	self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
-	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
+	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
 
-	temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(1)
+	temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(0)
 	if temp:
+		temp.setSerialNumber("999201")
 		temp.setStatus("FAILED")
 		self.processGraphicManager.updateAll()
 	else:
@@ -112,7 +113,7 @@ class MainFrame(wx.Frame):
 	else:
 		pass
 
-	self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
+	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
 
 	return True
 

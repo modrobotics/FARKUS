@@ -122,25 +122,51 @@ class FarkusGUIProcessGraphicManager():
             self.gui.Update()
     
     def updatePartInformation(self):
+        try:
+            for index in range(0,11):
+                part = self.gui.farkusTable.getConveyance().getConnectedParts()[index]
+               
+                # TODO: Math! But this works for now
+                if (index == 0): # Modules are on the odd part holders, and they are 1 indexed
+                    moduleIndex = 1
+                elif (index == 2):
+                    moduleIndex = 2
+                elif (index == 4):
+                    moduleIndex = 3
+                elif (index == 6):
+                    moduleIndex = 4
+                elif (index == 8):
+                    moduleIndex = 5
+                elif (index == 10):
+                    moduleIndex = 6
+                else:
+                    moduleIndex = False
+                    
+                if (part is None):
+                    # No part here. Mark it.
+                    self.markPartHolderStatus(index, "EMPTY")
+                    
+                    # update the ID field if we're dealing with a part holder currently in a module
+                    if(moduleIndex):
+                        self.gui.moduleCubeID[moduleIndex].SetLabel('---------') #cubeIDfields are 1-indexed
+                else:
+                    #we have a part, so it will have a status
+                    self.markPartHolderStatus(index, part.getStatus())
+                    
+                    # if were in a module, update the Serial Number field
+                    if(moduleIndex):
+                        # update the ID field
+                        if(part.getSerialNumber() is not None):
+                            self.gui.moduleCubeID[moduleIndex].SetLabel(str(part.getSerialNumber())) #cubeIDfields are 1-indexed
+                        else:
+                            self.gui.moduleCubeID[moduleIndex].SetLabel('Unknown') #cubeIDfields are 1-indexed
+                            
+                # increment the index regardless
+                index+=1
+                
+                # Force the GUI to update right now...
+                self.gui.Update()
+        except Exception:
+            pass
         
-        for index in range(0,11):
-            part = self.gui.farkusTable.getConveyance().getConnectedParts()[index]
-        
-            if (part is None):
-                # No part here. Mark it.
-                self.markPartHolderStatus(index, "EMPTY")
-                #self.gui.LogToGUI("index " + str(index) + " has no part")
-            else:
-                #we have a part
-                #status = part.getStatus()
-                #self.markPartHolderStatus(index, status)
-                self.markPartHolderStatus(index, part.getStatus())
-                #self.gui.LogToGUI("index " + str(index) + " has " + part.getPartType().getName() )
-            # increment the index regardless
-            index+=1
-            
-            # Force the GUI to update right now...
-            self.gui.Update()
-
-        
-        
+                
