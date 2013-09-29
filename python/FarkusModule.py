@@ -22,11 +22,18 @@ class FarkusModule():
         pass
     
     def remove(self ):
-        # Estop module
-        # Disconnect Serial
-        # Set self to false
-        pass
-    
+        try:
+            # Estop module
+            self.eStop()
+        
+            # Disconnect Serial
+            self.serialWorker.abort()
+        
+            # Set self to false
+            self = False
+        except:
+            pass;
+        
     #  MODULE COMMANDS ARE HERE ##################
     #    Overall TODO: check for echo of command, boolean return
     #            TODO: constants for commands
@@ -66,13 +73,32 @@ class FarkusModule():
         else:
             return False
     
-    def setName(self, name):
+    def setShortName1(self, name):
         if( self.moduleType is not None ):
-            self.moduleType.setName(name)
+            self.moduleType.setShortName1(name)
             return True
         else:
             return False
     
+    def getShortName1(self):
+        if( self.moduleType is not None ):
+            return self.moduleType.getShortName1()
+        else:
+            return False
+    
+    def setShortName2(self, name):
+        if( self.moduleType is not None ):
+            self.moduleType.setShortName2(name)
+            return True
+        else:
+            return False
+    
+    def getShortName2(self):
+        if( self.moduleType is not None ):
+            return self.moduleType.getShortName2()
+        else:
+            return False
+        
     def getConfigState(self):
         return self.configState
 

@@ -21,11 +21,20 @@ class FarkusModuleManager():
         pass
         
     def removeAll(self):
-        pass
+        self.modules = []       # TODO: potential memory leak here...threads getting abandoned.  Not sure how python handles this.
+        self.installedModuleCount = 0
+        return True
+        
     
     def getModuleBySerialPort(self, port):  #not safe if there are two of the same module installed
         for module in self.modules:
             if( module.getSerialPortIdentifier() == port):
+                return module
+        return False;
+    
+    def getModuleByTablePosition(self, position):
+        for module in self.modules:
+            if( module.getTablePosition() == position):
                 return module
         return False;
     

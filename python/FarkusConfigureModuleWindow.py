@@ -3,12 +3,12 @@ import sys
 
 class FarkusConfigureModuleWindow(wx.Dialog):
     
-    def __init__(self, parent, position, moduleManager, **kw):
+    def __init__(self, parent, position, moduleManager, gui, **kw):
         super(FarkusConfigureModuleWindow, self).__init__(None, **kw) 
         
         self.position = position
         self.moduleManager = moduleManager
-        
+        self.gui = gui
         self.InitUI(position)
         self.SetSize((620, 400))
         self.lastSelection = None
@@ -93,4 +93,6 @@ class FarkusConfigureModuleWindow(wx.Dialog):
         
         # Events de-select the list? WTF?
         self.time_zones.SetSelection(index)
+        
+        self.gui.processGraphicManager.updateAll()
         

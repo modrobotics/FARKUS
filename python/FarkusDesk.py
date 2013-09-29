@@ -1,4 +1,5 @@
 #!/usr/bin/python
+
 from threading import *
 import wx
 from time import sleep
@@ -11,15 +12,14 @@ import shelve
 import time
 from serial.tools import list_ports
 
+import SerialWorker
 import FarkusModuleType
 import FarkusModuleTypeManager
 import FarkusModule
 import FarkusModuleManager
 import FarkusConveyance
-import SerialWorker
 import FarkusConfigureModuleWindow
 import FarkusGUIProcessGraphicManager
-
 
 SETTINGS_DATA_FILE = "/home/pi/FARKUS/python" + "/Settings.dat"
 
@@ -132,7 +132,7 @@ class MainFrame(wx.Frame):
     
     def ConfigModule(self, event ):	
 	# Configure new window, show, save, destroy
-	chgdep = FarkusConfigureModuleWindow.FarkusConfigureModuleWindow(None, event.moduleLocation, self.moduleManager, title='Details: Module ' + str(event.moduleLocation) )
+	chgdep = FarkusConfigureModuleWindow.FarkusConfigureModuleWindow(None, event.moduleLocation, self.moduleManager, self, title='Details: Module ' + str(event.moduleLocation) )
 	chgdep.ShowModal()
 	chgdep.Destroy()    
 	
@@ -187,7 +187,7 @@ class MainFrame(wx.Frame):
         self.SetMenuBar(self.menubar)
 	
 	
-	self.processGraphicManager = FarkusGUIProcessGraphicManager.FarkusGUIProcessGraphicManager(self)
+	self.processGraphicManager = FarkusGUIProcessGraphicManager.FarkusGUIProcessGraphicManager(self, None)
 
 	
 
@@ -264,7 +264,7 @@ class MainFrame(wx.Frame):
 	self.moduleTypeManager = FarkusModuleTypeManager.FarkusModuleTypeManager();
 	self.moduleManager = FarkusModuleManager.FarkusModuleManager();
 	
-	
+	self.processGraphicManager.setModuleManager(self.moduleManager)
 	
 		
 	# Redirect STDOUT, STDERR to our logger now that we've rendered
@@ -272,96 +272,107 @@ class MainFrame(wx.Frame):
 	sys.stderr=RedirectSTDOUT_STDERR(self)
 	
     def OnOpenSerial(self, event):
-		self.LogToGUI("Discovering Devices...")
-
-	 # Windows
-		#if os.name == 'nt':
-		# Scan for available ports.
-		availablePorts = []
-		availableModuleTypes = []
-		availableModuleLocations = []
-		availableModuleLongNames = []
-		
-		# Close existing connections
-		for i in self.serialWorkers:
-			try:
-				if i.isAlive() and i.ser.isOpen():
-					i.ser.close()
-					i.abort()
-			except:
-				pass
-		
-		
-		for port in list_ports.comports():
-		#for i in range(256):
-			try:
-				s = serial.Serial(port[0], timeout=2)
-				# maybe wait a hot second here for the bootloader to take a chill pill.
-				s.write("I")
-				
-				
-				identity = s.read(5)
-				
-				if(len(identity) > 0):
-					# We got something back
-					
-					# Search the module types DB for a matching ID string
-					foundModuleType = self.moduleTypeManager.getModuleTypeBySerialIDString(identity)
-					
-										
-					if ( foundModuleType ):  # Did we find a standard module?
-						availablePorts.append(port[0])
-						availableModuleLongNames.append(foundModuleType.getName())
-						availableModuleTypes.append(foundModuleType.getSerialIDString())
-						availableModuleLocations.append(False)
-						self.LogToGUI("Found " + foundModuleType.getName() + " at " + str(port[0]))
-						self.moduleManager.add(FarkusModule.FarkusModule(foundModuleType.getSerialIDString(), self.moduleTypeManager, port[0]) )
-					elif identity == self.conveyance.getExpectedSerialIDString(): # Did we find a conveyance?
-						availablePorts.append(port[0])
-						availableModuleLongNames.append(self.conveyance.getName())
-						availableModuleTypes.append(self.conveyance.getExpectedSerialIDString())
-						availableModuleLocations.append(False)
-						self.LogToGUI("Found " + self.conveyance.getName() + " at " + str(port[0]))
-						self.conveyance.setSerialPortIdentifier(port[0])
-					else:
-						self.LogToGUI("Unknown device found at " + str(port[0]))
-				else:
-					self.LogToGUI("The device at " + str(port[0]) +" failed to identify itself.")
-				s.close()
-			except serial.SerialException:
-				pass
-			
-		#else:
-		#	# Mac / Linux
-		#	self.LogToGUI([port[0] for port in list_ports.comports()])	
-		
-		if len(availablePorts) > 0:
-			#self.LogToGUI('Attempting to connect to modules....')
+	
+	# This function will remove all current devices and reconnect.
+	# TODO: allows discovery/connection of NEW modules only.  Maybe that could run period 
+	self.LogToGUI("Discovering Devices...")
+			# Close existing connections
+	for i in self.serialWorkers:
+		try:
+			if i.isAlive() and i.ser.isOpen():
+				i.ser.close()
+				i.abort()
+		except:
 			pass
-		else:
-			self.LogToGUI('No FARKUS-compatible modules were found.')
-			
-		# Close existing connections
-		for i in self.serialWorkers:
-			try:
-				if i.isAlive() and i.ser.isOpen():
-					i.ser.close()
-					i.abort()
-			except:
-				pass
 		
-		# Open connections to the modules we found
-		for i in range(len(availablePorts)):
-			temp = None
-			if(availableModuleTypes[i] == self.conveyance.getExpectedSerialIDString()):
-				#Conveyance is special
-				self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
-				self.conveyance.setSerialWorker(self.serialWorkers[i]) # TODO: I tried moving this into the Conveyance/module object, but had trouble with event handling.  No time now.
+	# Remove all of the modules currently "on the table"
+	self.moduleManager.removeAll()
+	self.processGraphicManager.updateAll()
+
+	# Windows
+	#if os.name == 'nt':
+
+	availablePorts = []
+	availableModuleTypes = []
+	availableModuleLocations = []
+	availableModuleLongNames = []
+	
+	# Close existing connections
+	for i in self.serialWorkers:
+		try:
+			if i.isAlive() and i.ser.isOpen():
+				i.ser.close()
+				i.abort()
+		except:
+			pass
+	
+	
+	for port in list_ports.comports():  #unix/mac
+	#for i in range(256):  #windows
+		try:
+			s = serial.Serial(port[0], timeout=2)
+			# maybe wait a hot second here for the bootloader to take a chill pill.
+			s.write("I")
+			
+			
+			identity = s.read(5)
+			
+			if(len(identity) > 0):
+				# We got something back
 				
+				# Search the module types DB for a matching ID string
+				foundModuleType = self.moduleTypeManager.getModuleTypeBySerialIDString(identity)
+				
+									
+				if ( foundModuleType ):  # Did we find a standard module?
+					availablePorts.append(port[0])
+					availableModuleLongNames.append(foundModuleType.getName())
+					availableModuleTypes.append(foundModuleType.getSerialIDString())
+					availableModuleLocations.append(False)
+					self.LogToGUI("Found " + foundModuleType.getName() + " at " + str(port[0]))
+					self.moduleManager.add(FarkusModule.FarkusModule(foundModuleType.getSerialIDString(), self.moduleTypeManager, port[0]) )
+				elif identity == self.conveyance.getExpectedSerialIDString(): # Did we find a conveyance?
+					availablePorts.append(port[0])
+					availableModuleLongNames.append(self.conveyance.getName())
+					availableModuleTypes.append(self.conveyance.getExpectedSerialIDString())
+					availableModuleLocations.append(False)
+					self.LogToGUI("Found " + self.conveyance.getName() + " at " + str(port[0]))
+					self.conveyance.setSerialPortIdentifier(port[0])
+				else:
+					self.LogToGUI("Unknown device found at " + str(port[0]))
 			else:
-				self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
-				temp = self.moduleManager.getModuleBySerialPort(availablePorts[i])
-				temp.setSerialWorker(self.serialWorkers[i])
+				self.LogToGUI("The device at " + str(port[0]) +" failed to identify itself.")
+			s.close()
+		except serial.SerialException:
+			pass
+	
+	if len(availablePorts) > 0:
+		#self.LogToGUI('Attempting to connect to modules....')
+		pass
+	else:
+		self.LogToGUI('No FARKUS-compatible modules were found.')
+		
+	# Close existing connections
+	for i in self.serialWorkers:
+		try:
+			if i.isAlive() and i.ser.isOpen():
+				i.ser.close()
+				i.abort()
+		except:
+			pass
+		
+	# Open connections to the modules we found
+	for i in range(len(availablePorts)):
+		temp = None
+		if(availableModuleTypes[i] == self.conveyance.getExpectedSerialIDString()):
+			#Conveyance is special
+			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
+			self.conveyance.setSerialWorker(self.serialWorkers[i]) # TODO: I tried moving this into the Conveyance/module object, but had trouble with event handling.  No time now.
+			
+		else:
+			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
+			temp = self.moduleManager.getModuleBySerialPort(availablePorts[i])
+			temp.setSerialWorker(self.serialWorkers[i])
 				
 				
     def OnCloseSerial(self, event):

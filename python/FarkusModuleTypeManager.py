@@ -6,9 +6,9 @@ class FarkusModuleTypeManager():
         self.moduleTypes = []
         
         # TODO: Load these from a shelf.  For now we'll statically define them
-        self.moduleTypes.append(FarkusModuleType.FarkusModuleType(1823987,  "`0001", "***Cubelets Flashlight/Brightness Test Module"))
-        self.moduleTypes.append(FarkusModuleType.FarkusModuleType(1823987,  "`0002", "***Cubelets Communication Test Module"))
-        self.moduleTypes.append(FarkusModuleType.FarkusModuleType(1823987,  "`0003", "***Cubelets Power Test Module"))
+        self.moduleTypes.append(FarkusModuleType.FarkusModuleType(1823987,  "`0001", "***Cubelets Flashlight/Brightness Test Module", "Flash/Bright", "Test Module"))
+        self.moduleTypes.append(FarkusModuleType.FarkusModuleType(1823987,  "`0002", "***Cubelets Communication Test Module", "Cube Comm", "Test Module"))
+        self.moduleTypes.append(FarkusModuleType.FarkusModuleType(1823987,  "`0003", "***Cubelets Power Test Module", "Power Test", "Module"))
         
     def getModuleByLocation(self, location):
         pass
