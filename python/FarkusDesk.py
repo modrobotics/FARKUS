@@ -20,6 +20,7 @@ import FarkusModuleManager
 import FarkusConveyance
 import FarkusConfigureModuleWindow
 import FarkusGUIProcessGraphicManager
+import FarkusTable
 
 SETTINGS_DATA_FILE = "/home/pi/FARKUS/python" + "/Settings.dat"
 
@@ -132,7 +133,7 @@ class MainFrame(wx.Frame):
     
     def ConfigModule(self, event ):	
 	# Configure new window, show, save, destroy
-	chgdep = FarkusConfigureModuleWindow.FarkusConfigureModuleWindow(None, event.moduleLocation, self.moduleManager, self, title='Details: Module ' + str(event.moduleLocation) )
+	chgdep = FarkusConfigureModuleWindow.FarkusConfigureModuleWindow(None, event.moduleLocation, self.farkusTable.getModuleManager(), self, title='Details: Module ' + str(event.moduleLocation) )
 	chgdep.ShowModal()
 	chgdep.Destroy()    
 	
@@ -259,12 +260,11 @@ class MainFrame(wx.Frame):
 	# Show the application center in the user's screen
 	self.Centre()
 	
-	# Initialize FARKUS Manager Singletons
-	self.conveyance = FarkusConveyance.FarkusConveyance(False) #this should be reworked to extend the "module" class and not have to be instanciated before it's ready to install
-	self.moduleTypeManager = FarkusModuleTypeManager.FarkusModuleTypeManager();
-	self.moduleManager = FarkusModuleManager.FarkusModuleManager();
 	
-	self.processGraphicManager.setModuleManager(self.moduleManager)
+	# Initialize FARKUS Manager Singletons
+	self.farkusTable = FarkusTable.FarkusTable(self);
+	
+	self.processGraphicManager.setModuleManager(self.farkusTable.getModuleManager())
 	
 		
 	# Redirect STDOUT, STDERR to our logger now that we've rendered
@@ -286,7 +286,7 @@ class MainFrame(wx.Frame):
 			pass
 		
 	# Remove all of the modules currently "on the table"
-	self.moduleManager.removeAll()
+	self.farkusTable.getModuleManager().removeAll()
 	self.processGraphicManager.updateAll()
 
 	# Windows
@@ -321,7 +321,7 @@ class MainFrame(wx.Frame):
 				# We got something back
 				
 				# Search the module types DB for a matching ID string
-				foundModuleType = self.moduleTypeManager.getModuleTypeBySerialIDString(identity)
+				foundModuleType = self.farkusTable.getModuleTypeManager().getModuleTypeBySerialIDString(identity)
 				
 									
 				if ( foundModuleType ):  # Did we find a standard module?
@@ -330,14 +330,14 @@ class MainFrame(wx.Frame):
 					availableModuleTypes.append(foundModuleType.getSerialIDString())
 					availableModuleLocations.append(False)
 					self.LogToGUI("Found " + foundModuleType.getName() + " at " + str(port[0]))
-					self.moduleManager.add(FarkusModule.FarkusModule(foundModuleType.getSerialIDString(), self.moduleTypeManager, port[0]) )
-				elif identity == self.conveyance.getExpectedSerialIDString(): # Did we find a conveyance?
+					self.farkusTable.getModuleManager().add(FarkusModule.FarkusModule(foundModuleType.getSerialIDString(), self.farkusTable.getModuleTypeManager(), port[0]) )
+				elif identity == self.farkusTable.getConveyance().getExpectedSerialIDString(): # Did we find a conveyance?
 					availablePorts.append(port[0])
-					availableModuleLongNames.append(self.conveyance.getName())
-					availableModuleTypes.append(self.conveyance.getExpectedSerialIDString())
+					availableModuleLongNames.append(self.farkusTable.getConveyance().getName())
+					availableModuleTypes.append(self.farkusTable.getConveyance().getExpectedSerialIDString())
 					availableModuleLocations.append(False)
-					self.LogToGUI("Found " + self.conveyance.getName() + " at " + str(port[0]))
-					self.conveyance.setSerialPortIdentifier(port[0])
+					self.LogToGUI("Found " + self.farkusTable.getConveyance().getName() + " at " + str(port[0]))
+					self.farkusTable.getConveyance().setSerialPortIdentifier(port[0])
 				else:
 					self.LogToGUI("Unknown device found at " + str(port[0]))
 			else:
@@ -364,14 +364,14 @@ class MainFrame(wx.Frame):
 	# Open connections to the modules we found
 	for i in range(len(availablePorts)):
 		temp = None
-		if(availableModuleTypes[i] == self.conveyance.getExpectedSerialIDString()):
+		if(availableModuleTypes[i] == self.farkusTable.getConveyance().getExpectedSerialIDString()):
 			#Conveyance is special
 			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
-			self.conveyance.setSerialWorker(self.serialWorkers[i]) # TODO: I tried moving this into the Conveyance/module object, but had trouble with event handling.  No time now.
+			self.farkusTable.getConveyance().setSerialWorker(self.serialWorkers[i]) # TODO: I tried moving this into the Conveyance/module object, but had trouble with event handling.  No time now.
 			
 		else:
 			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
-			temp = self.moduleManager.getModuleBySerialPort(availablePorts[i])
+			temp = self.farkusTable.getModuleManager().getModuleBySerialPort(availablePorts[i])
 			temp.setSerialWorker(self.serialWorkers[i])
 				
 				
