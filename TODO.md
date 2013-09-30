@@ -1,17 +1,19 @@
-
 MUST HAVE TODO
 #######################
-*Proper response handling on serial workers, sending back error code
-*Respond to emercency stop 
-*Hookup "parts" type menu
-*Flashing modules final bugfix(s)
-*Automatic advance / preventing premature advancement
-*Arm position detection, state status reporting
-*characterize test: power
-*3D print 12 more part faces
+*Proper response handling on serial workers, sending back error code (Moyes)
+*Dumb emercency stop (Moyes)
+*Hookup "parts" type menu (Moyes)
+*Flashing modules final bugfix(s)  (Moyes)
+*Automatic advance / preventing premature advancement (Moyes)
+*Arm position detection, state status reporting (Nev)
+*3D print 12 more part faces (Nev)
+
+...then...
+
+*characterize test: power (
 
 ++++++++++++++++++++++++
-
+*smart emergency stop
 *Update cubelets shieild
 *Mechanical safety: EStop buttons, pinch point elimination/covers
 *failure mode tracking
