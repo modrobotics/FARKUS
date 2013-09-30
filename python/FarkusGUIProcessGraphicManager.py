@@ -110,6 +110,8 @@ class FarkusGUIProcessGraphicManager():
         self.updateModuleNames()
         self.updatePartInformation()
         self.updateStatusBar()
+        self.updateMainControlButtons()
+        pass
     
     def updateStatusBar(self):
         if(len(self.moduleManager.getConnectedModules()) > 0):
@@ -138,11 +140,23 @@ class FarkusGUIProcessGraphicManager():
             # Force the GUI to update right now...
             self.gui.Update()
     
+    def updateMainControlButtons(self):
+        if self.gui.farkusTable.getConveyance().isConnected():  #hacky...shouldn't be accessing the conveyance like this. TODO: self.getFarkusTable()
+            # We're connected to the conveyance, allow add part and Advance buttons
+            self.gui.advanceButton.Enable()
+            self.gui.addPartButton.Enable()
+            pass
+        else:
+            # disable buttons
+            self.gui.advanceButton.Disable()
+            self.gui.addPartButton.Disable()
+            pass
+    
     def updatePartInformation(self):
         try:
             for index in range(0,11):
                 part = self.gui.farkusTable.getConveyance().getConnectedParts()[index]
-               
+                
                 # TODO: Math! But this works for now
                 if (index == 0): # Modules are on the odd part holders, and they are 1 indexed
                     moduleIndex = 1
@@ -158,7 +172,7 @@ class FarkusGUIProcessGraphicManager():
                     moduleIndex = 6
                 else:
                     moduleIndex = False
-                    
+                   
                 if (part is None):
                     # No part here. Mark it.
                     self.markPartHolderStatus(index, "EMPTY")
@@ -177,7 +191,23 @@ class FarkusGUIProcessGraphicManager():
                             self.gui.moduleCubeID[moduleIndex].SetLabel(str(part.getSerialNumber())) #cubeIDfields are 1-indexed
                         else:
                             self.gui.moduleCubeID[moduleIndex].SetLabel('Unknown') #cubeIDfields are 1-indexed
-                            
+                                
+                        # This doesn't belong here at all. THis is a GUI manager, and I'm about to write code to tell modules what to do here.
+                        # Please forgive me.  I'll clean it up later
+                        if moduleIndex:
+                            # We're in a module.  There's a part in the module.
+                            # Eventually we'll query this FarkusPartType's required tests, this FarkusModule's supportedTests,
+                            # Check this against this FarkusPart's testResults and, if all of these things suggest
+                            # this module can perform a test that this PartType requires and hasn't yet been
+                            # completed, then run the test.  For now....we're going to throw our hands in the air and run all of the tests
+                            tempModule = self.moduleManager.getModuleByTablePosition(moduleIndex)
+                            if tempModule:
+                                # Got handle on Module successfully
+                                self.gui.LogToGUI("Instructing Module @ Position " + str(moduleIndex) + " to GO")
+                                tempModule.go()
+                            else:
+                                #self.gui.LogToGUI("We have a part in Module Position " + str(moduleIndex) + " with no Module Present")
+                                pass
                 # increment the index regardless
                 index+=1
                 

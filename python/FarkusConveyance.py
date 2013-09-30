@@ -2,9 +2,11 @@ import SerialWorker
 import SerialResultEventHandler
 
 import FarkusPart
-import FarkusPartTypeManager
 import FarkusPartType
+import FarkusPartTypeManager
+
 from collections import deque
+import time
 
 class FarkusConveyance():
 	"Class to define the Conveyance on a FARKUS Table"
@@ -59,6 +61,13 @@ class FarkusConveyance():
 		self.partsInProcess+=1 #increment attached part counter
 		self.gui.processGraphicManager.updatePartInformation()
 		self.gui.processGraphicManager.updateStatusBar()
+		
+		# Wait here for a second to allow the conveyance to actually move before telling modules to go
+		# TODO: Query for completion command.  I thought about putting this in self.advanceForward()
+		# but I want the GUI to update quickly
+		time.sleep(1)
+		return True
+	
 		pass
 		
 	def getPartsInProcess(self):
@@ -71,6 +80,13 @@ class FarkusConveyance():
 			self.removePartOnExit()
 			self.gui.processGraphicManager.updatePartInformation()
 			self.gui.processGraphicManager.updateStatusBar()
+			
+			# Wait here for a second to allow the conveyance to actually move before telling modules to go
+			# TODO: Query for completion command. I thought about putting this in self.advanceForward()
+			# but I want the GUI to update quickly
+			time.sleep(1)
+			return True
+		
 		except Exception:
 			pass
 	
@@ -79,7 +95,14 @@ class FarkusConveyance():
 		if removedPart is not None:
 			# There's actually a part on this holder
 			# TODO: Log this somewhere intelligent
-			self.gui.LogToGUI("Part on Exit Module (6) with Serial Number # " + str(removedPart.getSerialNumber()) + " " + removedPart.getStatus())
+			if removedPart.getStatus() == "PASSED":  #TODO: use EMUMS for status'
+				status = " passed all tests."
+			elif removedPart.getStatus() == "FAILURE":
+				status = " FAILED one or more tests."
+			else:
+				status = " finished with indeterminate status."
+					
+			self.gui.LogToGUI("Part on Exit Ramp (6+) with Serial Number # " + str(removedPart.getSerialNumber()) + status)
 			self.partsInProcess-=1 #decrement attached part counter
 			self.gui.processGraphicManager.updateStatusBar()
 		pass

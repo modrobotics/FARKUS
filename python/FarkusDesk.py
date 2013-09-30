@@ -267,12 +267,12 @@ class MainFrame(wx.Frame):
 	# Create ADVANCE Button!
 	self.advanceButton = wx.Button(self, ID_ADVANCE, "Advance", pos=(721, 165), size=(200,67))
 	self.advanceButton.SetBackgroundColour('#FCD116')
-	#self.pauseButton.Disable()
+	self.advanceButton.Disable()
 	
 	# Create Add Part Button!
 	self.addPartButton = wx.Button(self, ID_PAUSE, "Add Part", pos=(721, 242), size=(200,67))
 	self.addPartButton.SetBackgroundColour('#FCD116')
-	#self.pauseButton.Disable()
+	self.addPartButton.Disable()
 	
     
 	# Add the Modrobotics Logo
@@ -343,7 +343,7 @@ class MainFrame(wx.Frame):
 	# TODO: allows discovery/connection of NEW modules only.  Maybe that could run period 
 	
 			# Close existing connections
-	self.statusBar.SetStatusText('Disconnecting All Modules') 
+	self.statusBar.SetStatusText('Disconnecting All Devices') 
 	
 	for i in self.serialWorkers:
 		try:
@@ -450,7 +450,11 @@ class MainFrame(wx.Frame):
 			temp = self.farkusTable.getModuleManager().getModuleBySerialPort(availablePorts[i])
 			temp.setSerialWorker(self.serialWorkers[i])
 			self.processGraphicManager.updateStatusBar()
-				
+
+	# Everything is connected, update our UI	
+	self.processGraphicManager.updateAll()
+	pass
+
     def OnCloseSerial(self, event):
         if self.serialWorker and self.serialWorker.isAlive() and self.serialWorker.ser.isOpen():
             self.LogToGUI('Attempting to close Serial Connections')
@@ -491,7 +495,7 @@ class MainFrame(wx.Frame):
 			self.processGraphicManager.updateAll()
 			pass
 		else:
-			self.LogToGUI('Message from Location ' + str(1) + ': ' + event.data)
+			#self.LogToGUI('Message from Location ' + str(1) + ': ' + event.data)
 			pass
     
     def OnEditSettings(self, event):

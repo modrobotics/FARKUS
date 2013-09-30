@@ -1,4 +1,5 @@
 import FarkusPartType
+import random
 
 class FarkusPart():
     "Class to define the ACTUAL parts on a FARKUS Table"
@@ -6,7 +7,7 @@ class FarkusPart():
         self.id = 1  #TODO: Generate UUID
         self.partType = partType
         self.testResults = []
-        self.serialNumber = None # Use for Cubelet ID
+        self.serialNumber = random.randrange(46000, 56000) # Use for Cubelet ID
         self.status = "UNKNOWN" # We don't know what this part's status is yet.
         
     def getStatus(self):
