@@ -121,6 +121,7 @@ class MainFrame(wx.Frame):
     
     def onAdvance( self, event ):
 	self.farkusTable.getConveyance().insertEmptyPartHolder() # empty part holder
+	self.processGraphicManager.updateAll()
 	pass
     
     def onAddPart( self, event ):
@@ -150,7 +151,7 @@ class MainFrame(wx.Frame):
     def __OnLeftDown( self, event ):
 	pos = event.GetPositionTuple()
 	self.getProcessGraphicClickEventHandler(pos[0], pos[1]);
-	self.LogToGUI("X: " + str(pos[0]) + " Y: " + str(pos[1]))
+	#self.LogToGUI("X: " + str(pos[0]) + " Y: " + str(pos[1]))
 	event.Skip()
 	
     def getProcessGraphicClickEventHandler(self, positionX, positionY):
@@ -313,10 +314,6 @@ class MainFrame(wx.Frame):
 	EVT_NEWSERIALDATA0(self,self.OnNewSerialData)
 	EVT_CONFIGMODULE(self,self.ConfigModule)
 
-        # Create a status bar and set the default status
-	self.statusBar = self.CreateStatusBar()
-	self.statusBar.SetStatusText('Offline - 0 Modules Connected.') # Eventually we'll need to set this dynamically from settings
-	
 	# Setup the serial submenu
 	self.serialSubMenu.Check(ID_OPTIONS_CLOSESERIAL, True)
 	self.serialSubMenu.Enable(ID_OPTIONS_CLOSESERIAL, False)
@@ -344,8 +341,10 @@ class MainFrame(wx.Frame):
 	
 	# This function will remove all current devices and reconnect.
 	# TODO: allows discovery/connection of NEW modules only.  Maybe that could run period 
-	self.LogToGUI("Discovering Devices...")
+	
 			# Close existing connections
+	self.statusBar.SetStatusText('Disconnecting All Modules') 
+	
 	for i in self.serialWorkers:
 		try:
 			if i.isAlive() and i.ser.isOpen():
@@ -358,6 +357,9 @@ class MainFrame(wx.Frame):
 	self.farkusTable.getModuleManager().removeAll()
 	self.processGraphicManager.updateAll()
 
+	self.statusBar.SetStatusText('Searching for FARKUS-Compatible Modules') 
+	self.LogToGUI("Searching for FARKUS-Compatible Modules")
+	
 	# Windows
 	#if os.name == 'nt':
 
@@ -375,7 +377,7 @@ class MainFrame(wx.Frame):
 		except:
 			pass
 	
-	
+	foundDevices = 0
 	for port in list_ports.comports():  #unix/mac
 	#for i in range(256):  #windows
 		try:
@@ -398,15 +400,19 @@ class MainFrame(wx.Frame):
 					availableModuleLongNames.append(foundModuleType.getName())
 					availableModuleTypes.append(foundModuleType.getSerialIDString())
 					availableModuleLocations.append(False)
-					self.LogToGUI("Found " + foundModuleType.getName() + " at " + str(port[0]))
+					#self.LogToGUI("Found " + foundModuleType.getName() + " at " + str(port[0]))
 					self.farkusTable.getModuleManager().add(FarkusModule.FarkusModule(foundModuleType.getSerialIDString(), self.farkusTable.getModuleTypeManager(), port[0]) )
+					foundDevices+=1
+					self.statusBar.SetStatusText('Searching for FARKUS-Compatible Devices - Found ' + str(foundDevices) + ' Devices.') 
 				elif identity == self.farkusTable.getConveyance().getExpectedSerialIDString(): # Did we find a conveyance?
 					availablePorts.append(port[0])
 					availableModuleLongNames.append(self.farkusTable.getConveyance().getName())
 					availableModuleTypes.append(self.farkusTable.getConveyance().getExpectedSerialIDString())
 					availableModuleLocations.append(False)
-					self.LogToGUI("Found " + self.farkusTable.getConveyance().getName() + " at " + str(port[0]))
+					#self.LogToGUI("Found " + self.farkusTable.getConveyance().getName() + " at " + str(port[0]))
 					self.farkusTable.getConveyance().setSerialPortIdentifier(port[0])
+					foundDevices+=1
+					self.statusBar.SetStatusText('Searching for FARKUS-Compatible Devices - Found ' + str(foundDevices) + ' Devices.') 
 				else:
 					self.LogToGUI("Unknown device found at " + str(port[0]))
 			else:
@@ -416,10 +422,10 @@ class MainFrame(wx.Frame):
 			pass
 	
 	if len(availablePorts) > 0:
-		#self.LogToGUI('Attempting to connect to modules....')
+		self.statusBar.SetStatusText('Attempting to connect to discovered devices...') 
 		pass
 	else:
-		self.LogToGUI('No FARKUS-compatible modules were found.')
+		self.processGraphicManager.updateStatusBar()  # offline
 		
 	# Close existing connections
 	for i in self.serialWorkers:
@@ -431,18 +437,19 @@ class MainFrame(wx.Frame):
 			pass
 		
 	# Open connections to the modules we found
+	
 	for i in range(len(availablePorts)):
 		temp = None
 		if(availableModuleTypes[i] == self.farkusTable.getConveyance().getExpectedSerialIDString()):
 			#Conveyance is special
 			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
 			self.farkusTable.getConveyance().setSerialWorker(self.serialWorkers[i]) # TODO: I tried moving this into the Conveyance/module object, but had trouble with event handling.  No time now.
-			
+			self.processGraphicManager.updateStatusBar()
 		else:
 			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
 			temp = self.farkusTable.getModuleManager().getModuleBySerialPort(availablePorts[i])
 			temp.setSerialWorker(self.serialWorkers[i])
-				
+			self.processGraphicManager.updateStatusBar()
 				
     def OnCloseSerial(self, event):
         if self.serialWorker and self.serialWorker.isAlive() and self.serialWorker.ser.isOpen():
@@ -466,12 +473,25 @@ class MainFrame(wx.Frame):
 			pass
 		elif event.data == "$$$CONNECTFAIL$$$":
 			self.LogToGUI("Connection to "+event.moduleLongName+ " @ Location "+str(event.moduleLocation)+ " was lost.");
+			
+			# Remove the module from the table
+			
+			# Check WTF we need to do now that guy is gone..
+			
+			# Update GUI
+			self.processGraphicManager.updateAll()
 			pass
 		elif event.data[:15] == "$$$COMMFAULT$$$":
 			self.LogToGUI("Communication failure @ Location "+str(event.moduleLocation)+ " "+event.moduleLongName);
+			# Remove the module from the table
+			
+			# Check WTF we need to do now that guy is gone..
+			
+			# Update GUI
+			self.processGraphicManager.updateAll()
 			pass
 		else:
-			#self.LogToGUI('Last Message: %s' % event.data)
+			self.LogToGUI('Message from Location ' + str(1) + ': ' + event.data)
 			pass
     
     def OnEditSettings(self, event):
@@ -501,18 +521,6 @@ class MainFrame(wx.Frame):
 	
     def OnStartDumbMode(self, event):
         self.LogToGUI("Starting Dumb Mode")
-        while 1==1:
-		
-            #self.serialWorkers[0].write("A");
-	    self.module1CubeID.SetLabel("13491")
-            #time.sleep(1)
-            #self.serialWorkers[1].write("A");
-            time.sleep(1)
-	    self.module1CubeID.SetLabel("---------")
-	    self.module2CubeID.SetLabel("13491")
-
-		
-	    break;
         pass;
 
 # A class to replace sys.stdout and sys.stderr to redirect those pipes to our logger

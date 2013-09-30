@@ -17,6 +17,11 @@ class FarkusModule():
         # Wait for RDY, set is_ready, is_ready event
         pass
         
+    def isConnected(self):
+        if( self.serialWorker.ser.isOpen() ):
+            return True
+        return False
+    
     def connect(self ):
         # Attempt serial connection, wait for RDY, set is ready, is_ready event
         pass

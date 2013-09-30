@@ -68,6 +68,10 @@ class FarkusGUIProcessGraphicManager():
 			offset +=1
 	
 	
+        # Create a status bar and set the default status
+	self.gui.statusBar = self.gui.CreateStatusBar()
+	self.gui.statusBar.SetStatusText('Offline')
+	
         # Create textfields for Cubelet IDs
 	self.gui.moduleCubeID[1] = wx.StaticText(self.gui, -1, '---------', pos=(105,248))
 	self.gui.moduleCubeID[2] = wx.StaticText(self.gui, -1, '---------', pos=(208,248))
@@ -105,6 +109,19 @@ class FarkusGUIProcessGraphicManager():
     def updateAll(self):
         self.updateModuleNames()
         self.updatePartInformation()
+        self.updateStatusBar()
+    
+    def updateStatusBar(self):
+        if(len(self.moduleManager.getConnectedModules()) > 0):
+            if self.gui.farkusTable.getConveyance().isConnected() is True:
+                conveyance = "Conveyance Connected - "
+            else:
+                conveyance = "Conveyance DISCONNECTED - "
+            status = "Online - " + conveyance + str(len(self.gui.farkusTable.getModuleManager().getConnectedModules())) + " Modules Connected - " + str(self.gui.farkusTable.getConveyance().getPartsInProcess()) + " parts in process."
+        else:
+            status = "Offline" 
+        self.gui.SetStatusText(status) # Eventually we'll need to set this dynamically from settings
+	
     
     def updateModuleNames(self):
         for i in range(1,7):

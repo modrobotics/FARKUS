@@ -41,5 +41,12 @@ class FarkusModuleManager():
     def getPresentModules (self):
         return self.modules
     
+    def getConnectedModules(self):
+        out = []
+        for module in self.modules:
+            #if( module.isConnected() is True):
+                out.append(module)
+        return out
+    
     def moveModule(self, locationStart, locationEnd):
         pass

@@ -18,10 +18,11 @@ class FarkusConveyance():
 		self.attachedParts = deque([]) # init deque with extra spot for shifting
 		for i in range(0,self.partHolderCount+1):
 			self.insertEmptyPartHolder()
+		self.partsInProcess = 0;
 		
 		self.serialPortIdentifier = serialPortIdentifier
 		self.serialWorker = None
-		self.isConnected = False
+		#self.isConnected = False
 		self.isReady=False
 		self.configState = None		
 		self.partTypeManager = partTypeManager
@@ -32,6 +33,14 @@ class FarkusConveyance():
 		# Wait for RDY, set is_ready, is_ready event
 		pass
 	
+	def isConnected(self):
+		try:
+			if self.serialWorker.ser.isOpen() is True:
+				return True
+			else:
+				return False
+		except:
+			return False
 	def connect(self):
 		# Attempt serial connection, wait for RDY, set is ready, is_ready event
 		pass
@@ -47,15 +56,21 @@ class FarkusConveyance():
 		self.attachedParts.appendleft(FarkusPart.FarkusPart( self.partTypeManager.getPartTypeById(partTypeId) ) )
 		self.removePartOnExit()
 		self.advanceForward()
+		self.partsInProcess+=1 #increment attached part counter
 		self.gui.processGraphicManager.updatePartInformation()
+		self.gui.processGraphicManager.updateStatusBar()
 		pass
 		
+	def getPartsInProcess(self):
+		return self.partsInProcess;
+	
 	def insertEmptyPartHolder(self):
 		try:
 			self.attachedParts.appendleft(None)
 			self.advanceForward()
 			self.removePartOnExit()
 			self.gui.processGraphicManager.updatePartInformation()
+			self.gui.processGraphicManager.updateStatusBar()
 		except Exception:
 			pass
 	
@@ -65,7 +80,8 @@ class FarkusConveyance():
 			# There's actually a part on this holder
 			# TODO: Log this somewhere intelligent
 			self.gui.LogToGUI("Part on Exit Module (6) with Serial Number # " + str(removedPart.getSerialNumber()) + " " + removedPart.getStatus())
-		
+			self.partsInProcess-=1 #decrement attached part counter
+			self.gui.processGraphicManager.updateStatusBar()
 		pass
 
 	def getConnectedPartByPartHolder(self, holderIndex):
