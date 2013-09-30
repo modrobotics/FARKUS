@@ -221,11 +221,11 @@ class MainFrame(wx.Frame):
         
 	self.optionsMenu.AppendMenu(ID_OPTIONS_CAROUSEL, 'Modules', self.serialSubMenu)
 
-        self.editSettingsItem = wx.MenuItem(self.fileMenu, ID_OPTIONS_EDITSETTINGS, '&Edit Settings', "Modify Settings")
-        self.startDumbMode = wx.MenuItem(self.fileMenu, ID_OPTIONS_STARTDUMB, '&Start Dumb Mode', "Get dumb.")
+        #self.editSettingsItem = wx.MenuItem(self.fileMenu, ID_OPTIONS_EDITSETTINGS, '&Edit Settings', "Modify Settings")
+        #self.startDumbMode = wx.MenuItem(self.fileMenu, ID_OPTIONS_STARTDUMB, '&Start Dumb Mode', "Get dumb.")
 
-        self.optionsMenu.AppendItem(self.editSettingsItem)
-        self.optionsMenu.AppendItem(self.startDumbMode)
+        #self.optionsMenu.AppendItem(self.editSettingsItem)
+        #self.optionsMenu.AppendItem(self.startDumbMode)
 		
         self.quitItem = wx.MenuItem(self.fileMenu, wx.ID_EXIT, '&Quit', 'Exit the Modular Robotics FARKUS Desk')
         self.fileMenu.AppendItem(self.quitItem)
@@ -260,7 +260,7 @@ class MainFrame(wx.Frame):
 	
 	
 	# Create START Button!
-	self.startButton = wx.Button(self, ID_START, "START", pos=(721, 320), size=(200,145))
+	self.startButton = wx.Button(self, ID_START, "Connect and Initialize", pos=(721, 320), size=(200,145))
 	self.startButton.SetBackgroundColour('#009900')
 	#self.startButton.Disable()
 	
@@ -289,8 +289,8 @@ class MainFrame(wx.Frame):
         # Bind GUI events to their handlers
 	self.Bind(wx.EVT_MENU, self.OnOpenSerial, self.openSerialItem)
         #self.Bind(wx.EVT_MENU, self.OnCloseSerial, self.closeSerialItem)
-        self.Bind(wx.EVT_MENU, self.OnStartDumbMode, self.startDumbMode)
-        self.Bind(wx.EVT_MENU, self.OnEditSettings, self.editSettingsItem)
+        #self.Bind(wx.EVT_MENU, self.OnStartDumbMode, self.startDumbMode)
+        #self.Bind(wx.EVT_MENU, self.OnEditSettings, self.editSettingsItem)
         self.Bind(wx.EVT_MENU, self.OnQuitApp, self.quitItem)
         	
         
