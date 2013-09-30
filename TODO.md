@@ -1,5 +1,4 @@
 
-
 MUST HAVE TODO
 #######################
 *Proper response handling on serial workers, sending back error code
@@ -18,6 +17,7 @@ MUST HAVE TODO
 *failure mode tracking
 *make spare faces
 *maintenance schedule: Tracking, alerts
+touch screen
 
 MISC TODO
 ########################
