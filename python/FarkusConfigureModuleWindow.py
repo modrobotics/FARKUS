@@ -4,15 +4,15 @@ import sys
 class FarkusConfigureModuleWindow(wx.Dialog):
     
     def __init__(self, parent, position, moduleManager, gui, **kw):
-        super(FarkusConfigureModuleWindow, self).__init__(None, **kw) 
-        
+        super(FarkusConfigureModuleWindow, self).__init__(None, **kw)
         self.position = position
         self.moduleManager = moduleManager
         self.gui = gui
+        
         self.InitUI(position)
         self.SetSize((620, 400))
         self.lastSelection = None
-    
+            
     def updateModuleList(self):
         self.time_zones.Clear()
         

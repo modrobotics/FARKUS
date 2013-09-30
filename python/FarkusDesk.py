@@ -174,10 +174,16 @@ class MainFrame(wx.Frame):
 		pass
     
     def ConfigModule(self, event ):	
-	# Configure new window, show, save, destroy
-	chgdep = FarkusConfigureModuleWindow.FarkusConfigureModuleWindow(None, event.moduleLocation, self.farkusTable.getModuleManager(), self, title='Details: Module ' + str(event.moduleLocation) )
-	chgdep.ShowModal()
-	chgdep.Destroy()    
+	# Configure new window, show, save, destroy...but only if we have modules connected
+	if(self.farkusTable.getModuleManager().getConnectedModuleCount() > 0):
+		chgdep = FarkusConfigureModuleWindow.FarkusConfigureModuleWindow(None, event.moduleLocation, self.farkusTable.getModuleManager(), self, title='Details: Module ' + str(event.moduleLocation) )
+		chgdep.ShowModal()
+		chgdep.Destroy()
+	else:
+		dlg = wx.MessageDialog(None, "There are no modules connected.\n\nPlease run \"Connect and Initialize\" first.", "Fark!", wx.OK | wx.ICON_WARNING)
+		dlg.ShowModal()
+		dlg.Destroy()
+	    
 	
     
     def isInSquare(self, posX, posY, startX, startY, endX, endY ):  #start=top left, end=bottom right. 
@@ -213,13 +219,22 @@ class MainFrame(wx.Frame):
         self.partsMenu = wx.Menu()
 
         self.serialSubMenu = wx.Menu()
-        self.openSerialItem = wx.MenuItem(self.serialSubMenu, ID_OPTIONS_OPENSERIAL, 'Discover and Connect', 'Open a connection to a FARKUS Array')
+        self.openSerialItem = wx.MenuItem(self.serialSubMenu, ID_OPTIONS_OPENSERIAL, 'Connect', 'Open a connection to a FARKUS Array')
         #self.closeSerialItem = wx.MenuItem(self.serialSubMenu, ID_OPTIONS_CLOSESERIAL, '** Disconnected **', 'Disconnect from the FARKUS Array', kind=wx.ITEM_CHECK)
-
         self.serialSubMenu.AppendItem(self.openSerialItem)
-       # self.serialSubMenu.AppendItem(self.closeSerialItem)
-        
-	self.optionsMenu.AppendMenu(ID_OPTIONS_CAROUSEL, 'Modules', self.serialSubMenu)
+		
+	self.configMenu = wx.Menu()
+        self.moduleTypesItem = wx.MenuItem(self.configMenu, False, 'Module Types', '')
+        self.partTypesItem = wx.MenuItem(self.configMenu, False, 'Part Types', '')
+        self.testTypesItem = wx.MenuItem(self.configMenu, False, 'Tests & Actions', '')
+        self.configMenu.AppendItem(self.moduleTypesItem)
+        self.configMenu.AppendItem(self.partTypesItem)
+        self.configMenu.AppendItem(self.testTypesItem)
+
+	self.optionsMenu.AppendMenu(ID_OPTIONS_CAROUSEL, 'Table', self.serialSubMenu)
+        self.optionsMenu.AppendMenu(ID_OPTIONS_CAROUSEL, 'Select Part to Process',self.partsMenu)
+        self.optionsMenu.AppendSeparator()
+        self.optionsMenu.AppendMenu(ID_OPTIONS_CAROUSEL, 'Configure', self.configMenu)
 
         #self.editSettingsItem = wx.MenuItem(self.fileMenu, ID_OPTIONS_EDITSETTINGS, '&Edit Settings', "Modify Settings")
         #self.startDumbMode = wx.MenuItem(self.fileMenu, ID_OPTIONS_STARTDUMB, '&Start Dumb Mode', "Get dumb.")
@@ -240,8 +255,7 @@ class MainFrame(wx.Frame):
 	self.partsMenu.AppendMenu(ID_OPTIONS_CAROUSEL, 'Cubelets', self.cubeletsSubMenu)
 
         self.menubar.Append(self.fileMenu, '&File')
-        self.menubar.Append(self.optionsMenu, '&Options')
-        self.menubar.Append(self.partsMenu, '&Parts')
+        self.menubar.Append(self.optionsMenu, '&Farkables')
         self.SetMenuBar(self.menubar)
 	
 	

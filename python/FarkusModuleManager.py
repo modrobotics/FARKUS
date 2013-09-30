@@ -1,5 +1,7 @@
 import FarkusModule
 
+#TODO: unify language: "installed module" vs "connected" or "attached" module
+
 class FarkusModuleManager():
     "Class to define helper functions for FarkusModule"
     def __init__(self):
@@ -50,3 +52,7 @@ class FarkusModuleManager():
     
     def moveModule(self, locationStart, locationEnd):
         pass
+    
+    def getConnectedModuleCount(self):
+        return self.installedModuleCount  # TODO: use this function more often. I'm using len(getConnectedModules()) in places
+    
