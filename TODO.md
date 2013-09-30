@@ -10,6 +10,8 @@ MUST HAVE TODO
 *Debug strange "working" response from modules (noted on conveyance) during GO command???
 *Hookup "parts" type menu
 *FarkusTable state control system
+*Known issue: if only conveyance is connected, you won't be able to get to the
+    conveyance's config window. which is fine, since there's nothing to do in there anyway
 
 
 
