@@ -16,6 +16,7 @@ class FarkusConveyance():
 		self.serialIDString = "`0000"
 		self.partHolderCount = 10  # one less than actual so that pop()'s occur on the exit ramp
 		self.partHolderPitch = None
+		self.allowPartsInIntermediatePositions = False  # Force conveyance to move 2 increments per part
 		
 		self.attachedParts = deque([]) # init deque with extra spot for shifting
 		for i in range(0,self.partHolderCount+1):
@@ -55,6 +56,9 @@ class FarkusConveyance():
 		
 	# adds the part, shifts the parts in the attachedParts array, advances the conveyance
 	def insertNewPart(self, partTypeId):
+		if self.allowPartsInIntermediatePositions is False:
+			self.skipIntermediatePartHolder()
+		
 		self.attachedParts.appendleft(FarkusPart.FarkusPart( self.partTypeManager.getPartTypeById(partTypeId) ) )
 		self.removePartOnExit()
 		self.advanceForward()
@@ -73,8 +77,17 @@ class FarkusConveyance():
 	def getPartsInProcess(self):
 		return self.partsInProcess;
 	
+	def skipIntermediatePartHolder(self):
+		self.attachedParts.appendleft(None)
+		self.advanceForward()
+		self.removePartOnExit()
+		self.gui.processGraphicManager.updatePartInformation()
+	
 	def insertEmptyPartHolder(self):
 		try:
+			if self.allowPartsInIntermediatePositions is False:
+				self.skipIntermediatePartHolder()
+			
 			self.attachedParts.appendleft(None)
 			self.advanceForward()
 			self.removePartOnExit()
@@ -130,10 +143,12 @@ class FarkusConveyance():
 	
 	def advanceForward(self):
 		self.setConfigState(1)  # Go forward TODO: constants for commands
+		time.sleep(0.1)
 		self.go()
 		
 	def advanceBackward(self):
-		self.setConfigState(1)  # Go backward TODO: constants for commands
+		self.setConfigState(0)  # Go backward TODO: constants for commands
+		time.sleep(0.1)
 		self.go()
 	
 	def eStop(self):
