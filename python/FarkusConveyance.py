@@ -129,7 +129,7 @@ class FarkusConveyance():
 		return True;
 	
 	def advanceForward(self):
-		self.setConfigState(0)  # Go forward TODO: constants for commands
+		self.setConfigState(1)  # Go forward TODO: constants for commands
 		self.go()
 		
 	def advanceBackward(self):
