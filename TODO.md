@@ -1,24 +1,37 @@
-
-
-
 MUST HAVE TODO
 #######################
-*Proper response handling on serial workers
-*Functions to support  farkustesttype, required tests, etc
-   - Control Module Actions
-   - Update part status after
-*Debug strange "working" response from modules (noted on conveyance) during GO command???
-*Hookup "parts" type menu
-*FarkusTable state control system
-*Known issue: if only conveyance is connected, you won't be able to get to the
-    conveyance's config window. which is fine, since there's nothing to do in there anyway
+*Proper response handling on serial workers, sending back error code (Moyes)
+*Dumb emercency stop (Moyes)
+*Hookup "parts" type menu (Moyes)
+*Flashing modules final bugfix(s)  (Moyes)
+*Automatic advance / preventing premature advancement (Moyes)
+*Arm position detection, state status reporting (Nev)
+*3D print 12 more part faces (Nev)
 
+...then...
 
+*characterize test: power (
 
-
+++++++++++++++++++++++++
+*smart emergency stop
+*Update cubelets shieild
+*Mechanical safety: EStop buttons, pinch point elimination/covers
+*failure mode tracking
+*make spare faces
+*maintenance schedule: Tracking, alerts
+touch screen
 
 MISC TODO
 ########################
+
+*Known issue: if only conveyance is connected, you won't be able to get to the
+    conveyance's config window. which is fine, since there's nothing to do in there anyway
+    
+*FarkusTable state control system
+*Functions to support  farkustesttype, required tests, etc
+   - Control Module Actions
+   - Update part status after
+   - 
 *Look for TODOs in code. Duh.
 *Enums for Commands
 *implement commands to getCurrentConfigState on modules
