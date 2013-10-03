@@ -64,13 +64,15 @@ class FarkusConveyance():
 		self.removePartOnExit()
 		self.advanceForward()
 		self.partsInProcess+=1 #increment attached part counter
-		self.gui.processGraphicManager.updatePartInformation()
-		self.gui.processGraphicManager.updateStatusBar()
-		
+				
 		# Wait here for a second to allow the conveyance to actually move before telling modules to go
 		# TODO: Query for completion command.  I thought about putting this in self.advanceForward()
 		# but I want the GUI to update quickly
-		time.sleep(1)
+		time.sleep(0.5)
+
+                self.gui.processGraphicManager.updatePartInformation()
+		self.gui.processGraphicManager.updateStatusBar()
+
 		return True
 	
 		pass
@@ -92,13 +94,15 @@ class FarkusConveyance():
 			self.attachedParts.appendleft(None)
 			self.advanceForward()
 			self.removePartOnExit()
-			self.gui.processGraphicManager.updatePartInformation()
-			self.gui.processGraphicManager.updateStatusBar()
+			
 			
 			# Wait here for a second to allow the conveyance to actually move before telling modules to go
 			# TODO: Query for completion command. I thought about putting this in self.advanceForward()
 			# but I want the GUI to update quickly
-			time.sleep(1)
+			time.sleep(0.5)
+
+			self.gui.processGraphicManager.updatePartInformation()
+			self.gui.processGraphicManager.updateStatusBar()
 			
 			return True
 		
@@ -144,13 +148,13 @@ class FarkusConveyance():
 		return True;
 	
 	def advanceForward(self):
-		self.setConfigState(1)  # Go forward TODO: constants for commands
-		time.sleep(0.1)
+		self.setConfigState(0)  # Go forward TODO: constants for commands
+		time.sleep(0.5)
 		self.go()
 		
 	def advanceBackward(self):
-		self.setConfigState(0)  # Go backward TODO: constants for commands
-		time.sleep(0.1)
+		self.setConfigState(1)  # Go backward TODO: constants for commands
+		time.sleep(0.5)
 		self.go()
 	
 	def eStop(self):

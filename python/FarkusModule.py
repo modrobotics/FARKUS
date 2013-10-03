@@ -26,15 +26,14 @@ class FarkusModule():
     def onNewMessageFromSerial(self, message):
         if message is not None:
             if self.isWaitingForSerialResponse is False:
-                # Expected, put it onto the buffer
+                # UNEXPECTED, put it onto the buffer
                 self.serialBuffer += message
                 
                 #are the last 2 characters on the buffer a newline pair?
                 if self.serialBuffer[-2:] == "\r\n":
                     self.serialBuffer = self.serialBuffer[:-2] #remove the newline
-                    self.gui.LogToGUI("Unexpected From " + str(self.tablePosition) + ": " + self.serialBuffer)
+                    self.gui.LogToGUI("Unexpected From Module " + str(self.tablePosition) + ": " + self.serialBuffer)
                     self.serialBuffer = ""
-                    self.isWaitingForSerialResponse = False
                 pass
             else:
                 # Expected, put it onto the buffer
@@ -43,7 +42,7 @@ class FarkusModule():
                 #are the last 2 characters on the buffer a newline pair?
                 if self.serialBuffer[-2:] == "\r\n":
                     self.serialBuffer = self.serialBuffer[:-2] #remove the newline
-                    self.gui.LogToGUI("From " + str(self.tablePosition) + ": " + self.serialBuffer)
+                    self.gui.LogToGUI("From Module " + str(self.tablePosition) + ": " + self.serialBuffer)
                     self.serialBuffer = ""
                     self.isWaitingForSerialResponse = False
                 #if so, we have a complete message, act on it.
@@ -80,17 +79,17 @@ class FarkusModule():
         self.isWaitingForSerialResponse = True
         self.nextExpectedResponse = str(response) # this is a dumb way to do this. It assumes that responses are 1-to-1, and limits the flexibility of these responses.  Likely to be revised soon.
                                         # If response === True, we're expecting a soft response to be processed outside of the normal event handler (anonymous function, perhaps?)
-        self.serialWorker.write(str(command))
+        self.serialWorker.write(command)
         # Maybe set a timer here to perform timeouts?
 
     
     def sendCommand(self, command):
-	self.serialWorker.write(str(command)) # this is more like a message, but whatever
+	self.serialWorker.write(commandsssssssssssssssssssssssssss) # this is more like a message, but whatever
         self.isWaitingForSerialResponse = False
         self.nextExpectedResponse = None # this is a dumb way to do this. It assumes that responses are 1-to-1, and limits the flexibility of these responses.  Likely to be revised soon.
         
     def go(self):
-	self.serialWorker.write("GO")
+	#self.serialWorker.write("GO")
         self.sendCommandWithResponse("GO", "GO")
         self.expectingPassFail = True
         self.isWaitingForSerialResponse = True
