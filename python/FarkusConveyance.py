@@ -17,6 +17,7 @@ class FarkusConveyance():
 		self.partHolderCount = 10  # one less than actual so that pop()'s occur on the exit ramp
 		self.partHolderPitch = None
 		self.allowPartsInIntermediatePositions = False  # Force conveyance to move 2 increments per part
+		self.isConveyance = True  #FarkusConveyance should get wrapped into an extension of FarkusModule eventually, lets start that now
 		
 		self.attachedParts = deque([]) # init deque with extra spot for shifting
 		for i in range(0,self.partHolderCount+1):

@@ -387,7 +387,7 @@ class MainFrame(wx.Frame):
 					availableModuleTypes.append(foundModuleType.getSerialIDString())
 					availableModuleLocations.append(False)
 					#self.LogToGUI("Found " + foundModuleType.getName() + " at " + str(port[0]))
-					self.farkusTable.getModuleManager().add(FarkusModule.FarkusModule(foundModuleType.getSerialIDString(), self.farkusTable.getModuleTypeManager(), port[0]) )
+					self.farkusTable.getModuleManager().add(FarkusModule.FarkusModule(foundModuleType.getSerialIDString(), self.farkusTable.getModuleTypeManager(), port[0], self) )
 					foundDevices+=1
 					self.statusBar.SetStatusText('Searching for FARKUS-Compatible Devices - Found ' + str(foundDevices) + ' Devices.') 
 				elif identity == self.farkusTable.getConveyance().getExpectedSerialIDString(): # Did we find a conveyance?
@@ -428,13 +428,15 @@ class MainFrame(wx.Frame):
 		temp = None
 		if(availableModuleTypes[i] == self.farkusTable.getConveyance().getExpectedSerialIDString()):
 			#Conveyance is special
-			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
+			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID, None)
 			self.farkusTable.getConveyance().setSerialWorker(self.serialWorkers[i]) # TODO: I tried moving this into the Conveyance/module object, but had trouble with event handling.  No time now.
+			self.serialWorkers[i].setModule(self.farkusTable.getConveyance()) #bind serialworker and conveyance
 			self.processGraphicManager.updateStatusBar()
 		else:
-			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID)
+			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, availablePorts[i], availableModuleTypes[i], availableModuleLocations[i], availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID, None)
 			temp = self.farkusTable.getModuleManager().getModuleBySerialPort(availablePorts[i])
-			temp.setSerialWorker(self.serialWorkers[i])
+			temp.setSerialWorker(self.serialWorkers[i]) #bind serialworker and module
+			self.serialWorkers[i].setModule(temp)
 			self.processGraphicManager.updateStatusBar()
 
 	# Everything is connected, update our UI	
@@ -455,7 +457,17 @@ class MainFrame(wx.Frame):
 	    pass
 	
     def OnNewSerialData(self, event): # This handler is shared by all of the serialworkers.  Retrieve details on which from the `event` variable
-		#print(event)
+		if event.module is not None:
+			# we have somewhere to route this event
+			if event.module.isConveyance is False:  # TODO: remove the isConveyance thing and check the object's type instead
+				# it's a FarkusModule, pass it along
+				event.module.onNewMessageFromSerial(event.data)
+			else:
+				# This is the FarkusConveyance
+				pass
+		else:
+			self.LogToGUI("Received a message from an orphaned SerialWorker")
+		
 		if event.data is None:
 			pass
 		elif event.data == "$$$OPEN$$$":

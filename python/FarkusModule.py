@@ -1,9 +1,9 @@
 class FarkusModule():
     "Class to define the ACTUAL MODULES on a FARKUS Table"
-    def __init__(self, moduleType, moduleTypeManager, serialPortIdentifier):
+    def __init__(self, moduleType, moduleTypeManager, serialPortIdentifier, gui):
         self.isReady=False
         self.tablePosition = None
-        
+        self.isConveyance = False
         self.moduleTypeManager = moduleTypeManager
         self.moduleType = self.moduleTypeManager.getModuleTypeBySerialIDString(moduleType)
         
@@ -11,16 +11,45 @@ class FarkusModule():
         
         self.serialWorker = None
         self.serialPortIdentifier = serialPortIdentifier
+        self.serialBuffer = ""
         
         self.isWaitingForSerialResponse = False
         self.expectingPassFail = False
         
+        self.gui = gui
         self.isBusy = False
         # Setup Serial, connect, set isConnected via function
         
         # Wait for RDY, set is_ready, is_ready event
         pass
         
+    def onNewMessageFromSerial(self, message):
+        if message is not None:
+            if self.isWaitingForSerialResponse is False:
+                # Expected, put it onto the buffer
+                self.serialBuffer += message
+                
+                #are the last 2 characters on the buffer a newline pair?
+                if self.serialBuffer[-2:] == "\r\n":
+                    self.serialBuffer = self.serialBuffer[:-2] #remove the newline
+                    self.gui.LogToGUI("Unexpected From " + str(self.tablePosition) + ": " + self.serialBuffer)
+                    self.serialBuffer = ""
+                    self.isWaitingForSerialResponse = False
+                pass
+            else:
+                # Expected, put it onto the buffer
+                self.serialBuffer += message
+                
+                #are the last 2 characters on the buffer a newline pair?
+                if self.serialBuffer[-2:] == "\r\n":
+                    self.serialBuffer = self.serialBuffer[:-2] #remove the newline
+                    self.gui.LogToGUI("From " + str(self.tablePosition) + ": " + self.serialBuffer)
+                    self.serialBuffer = ""
+                    self.isWaitingForSerialResponse = False
+                #if so, we have a complete message, act on it.
+            
+        pass
+    
     def isConnected(self):
         if( self.serialWorker.ser.isOpen() ):
             return True
