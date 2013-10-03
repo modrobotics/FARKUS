@@ -88,33 +88,6 @@ class MainFrame(wx.Frame):
 	
 	self.LogToGUI("System entering paused state")
 	self.farkusTable.pause()
-	
-	# for testing part tracking
-	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-	self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	#self.farkusTable.getConveyance().insertEmptyPartHolder() # new brightness onboard!
-	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
-
-	temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(0)
-	if temp:
-		temp.setSerialNumber("999201")
-		#temp.setStatus("FAILED")
-		self.processGraphicManager.updateAll()
-	else:
-		pass
-	
-	#temp = self.farkusTable.getConveyance().getConnectedPartByPartHolder(7)
-	#if temp:
-#		temp.setStatus("PASSED")
-	#	self.processGraphicManager.updateAll()
-	#else:
-#		pass
-
-	#self.farkusTable.getConveyance().insertNewPart(2) # new flashlight onboard!
 
 	return True
 
