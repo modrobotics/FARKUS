@@ -1,13 +1,13 @@
 MUST HAVE TODO
 #######################
 *Proper response handling on serial workers, sending back error code (Moyes)
-*Dumb emercency stop (Moyes)
+*Dumb emercency stop (Moyes) - Part received. 
 *Hookup "parts" type menu (Moyes)
 *Flashing modules final bugfix(s)  (Moyes)
 *Automatic advance / preventing premature advancement (Moyes)
 *Arm position detection, state status reporting (Nev)
 *3D print 12 more part faces (Nev)
-
+*~~fix double "GO" command bug~~ 
 ...then...
 
 *characterize test: power (
