@@ -201,7 +201,10 @@ class FarkusGUIProcessGraphicManager():
                             # this module can perform a test that this PartType requires and hasn't yet been
                             # completed, then run the test.  For now....we're going to throw our hands in the air and run all of the tests
                             tempModule = self.moduleManager.getModuleByTablePosition(moduleIndex)
-                            if tempModule:
+                            if tempModule:# and (tempModule.isBusy() == False):  # TODO: this isBusy check isn't required. updatePartInfo()
+                                                                                # is getting called 2x now, but making a ModuleManager or
+                                                                                # TestManager method handle this should alleviate the need
+                                                                                # for this code here.
                                 # Got handle on Module successfully
                                 self.gui.LogToGUI("Instructing Module @ Position " + str(moduleIndex) + " to GO")
                                 tempModule.go()

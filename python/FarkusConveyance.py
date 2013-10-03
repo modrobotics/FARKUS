@@ -98,6 +98,7 @@ class FarkusConveyance():
 			# TODO: Query for completion command. I thought about putting this in self.advanceForward()
 			# but I want the GUI to update quickly
 			time.sleep(1)
+			
 			return True
 		
 		except Exception:

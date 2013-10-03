@@ -12,6 +12,10 @@ class FarkusModule():
         self.serialWorker = None
         self.serialPortIdentifier = serialPortIdentifier
         
+        self.isWaitingForSerialResponse = False
+        self.expectingPassFail = False
+        
+        self.isBusy = False
         # Setup Serial, connect, set isConnected via function
         
         # Wait for RDY, set is_ready, is_ready event
@@ -43,24 +47,56 @@ class FarkusModule():
     #    Overall TODO: check for echo of command, boolean return
     #            TODO: constants for commands
 
+    def sendCommandWithResponse(self, command, response ):
+        self.isWaitingForSerialResponse = True
+        self.nextExpectedResponse = str(response) # this is a dumb way to do this. It assumes that responses are 1-to-1, and limits the flexibility of these responses.  Likely to be revised soon.
+                                        # If response === True, we're expecting a soft response to be processed outside of the normal event handler (anonymous function, perhaps?)
+        self.serialWorker.write(str(command))
+        # Maybe set a timer here to perform timeouts?
+
+    
+    def sendCommand(self, command):
+	self.serialWorker.write(str(command)) # this is more like a message, but whatever
+        self.isWaitingForSerialResponse = False
+        self.nextExpectedResponse = None # this is a dumb way to do this. It assumes that responses are 1-to-1, and limits the flexibility of these responses.  Likely to be revised soon.
+        
     def go(self):
 	self.serialWorker.write("GO")
+        self.sendCommandWithResponse("GO", "GO")
+        self.expectingPassFail = True
+        self.isWaitingForSerialResponse = True
+        # Maybe set a timer here to perform timeouts?
+        
         return True
     
     def eStop(self):
-        self.serialWorker.write("ESTOP")
+        self.serialWorker.write("GO")
+        self.sendCommandWithResponse("ESTOP", "ESTOP")
+        self.expectingPassFail = False
+        self.isWaitingForSerialResponse = True
+        # Maybe set a timer here to perform timeouts?
+        
         return True
     
     def blinkForID(self):
-        self.serialWorker.write("BLINK")
+        self.sendCommandWithResponse("BLINK", "BLINK")
+        self.expectingPassFail = False
+        self.isWaitingForSerialResponse = True
+        # Maybe set a timer here to perform timeouts?
         return True
     
     def getActualModuleId(self):
-        self.serialWorker.write("I")
+        self.sendCommandWithResponse("I", True)  # [1]=True means soft response expected
+        self.expectingPassFail = False
+        self.isWaitingForSerialResponse = True
+        # Maybe set a timer here to perform timeouts?
         return True
     
     def configModule(self, state):
-        self.serialWorker.write("C" + state)
+        self.sendCommandWithResponse("C" + str(state), True)  # [1]=True means soft response expected
+        self.expectingPassFail = False
+        self.isWaitingForSerialResponse = True
+        # Maybe set a timer here to perform timeouts?
         return True
     
     # #############################################
@@ -114,6 +150,8 @@ class FarkusModule():
         else:
             return False
         
+    def isBusy(self):
+        return True
     
     def getIsReady(self):
         return self.isReady

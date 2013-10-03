@@ -121,7 +121,6 @@ class MainFrame(wx.Frame):
     
     def onAdvance( self, event ):
 	self.farkusTable.getConveyance().insertEmptyPartHolder() # empty part holder
-	self.processGraphicManager.updateAll()
 	pass
     
     def onAddPart( self, event ):
