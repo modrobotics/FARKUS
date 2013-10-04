@@ -206,8 +206,11 @@ class FarkusGUIProcessGraphicManager():
                                                                                 # TestManager method handle this should alleviate the need
                                                                                 # for this code here.
                                 # Got handle on Module successfully
-                                self.gui.LogToGUI("Instructing Module @ Position " + str(moduleIndex) + " to GO")
-                                tempModule.go()
+                                if(tempModule.isBusy is True):
+                                    pass
+                                else:
+                                    self.gui.LogToGUI("Instructing Module @ Position " + str(moduleIndex) + " to GO")
+                                    tempModule.go()
                             else:
                                 #self.gui.LogToGUI("We have a part in Module Position " + str(moduleIndex) + " with no Module Present")
                                 pass

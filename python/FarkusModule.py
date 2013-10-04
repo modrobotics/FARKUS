@@ -12,10 +12,10 @@ class FarkusModule():
         self.serialWorker = None
         self.serialPortIdentifier = serialPortIdentifier
         self.serialBuffer = ""
-        
+        self.lastCommand = ""
         self.isWaitingForSerialResponse = False
         self.expectingPassFail = False
-        
+
         self.gui = gui
         self.isBusy = False
         # Setup Serial, connect, set isConnected via function
@@ -33,6 +33,7 @@ class FarkusModule():
                 if self.serialBuffer[-2:] == "\r\n":
                     self.serialBuffer = self.serialBuffer[:-2] #remove the newline
                     self.gui.LogToGUI("Unexpected From Module " + str(self.tablePosition) + ": " + self.serialBuffer)
+                    self.lastCommand = self.serialBuffer
                     self.serialBuffer = ""
                 pass
             else:
@@ -43,10 +44,59 @@ class FarkusModule():
                 if self.serialBuffer[-2:] == "\r\n":
                     self.serialBuffer = self.serialBuffer[:-2] #remove the newline
                     self.gui.LogToGUI("From Module " + str(self.tablePosition) + ": " + self.serialBuffer)
+                    self.lastCommand = self.serialBuffer
                     self.serialBuffer = ""
-                    self.isWaitingForSerialResponse = False
                 #if so, we have a complete message, act on it.
-            
+                
+                if(True):
+                    if self.lastCommand == "PASS":
+                        # Set test result to pass
+                        # TODO: Math! But this works for now
+                        index = self.tablePosition
+                        if (index == 0): # Modules are on the odd part holders, and they are 1 indexed
+                            moduleIndex = 1
+                        elif (index == 2):
+                            moduleIndex = 2
+                        elif (index == 4):
+                            moduleIndex = 3
+                        elif (index == 6):
+                            moduleIndex = 4
+                        elif (index == 8):
+                            moduleIndex = 5
+                        elif (index == 10):
+                            moduleIndex = 6
+                        else:
+                            moduleIndex = False
+                        self.gui.LogToGUI("PASSED")
+                        if(self.gui.farkusTable.getConveyance().attachedParts[moduleIndex].getStatus() is not "FAILED" ): #don't let failed cubes pass...workaround for not having testresult objects working yet
+                            self.gui.farkusTable.getConveyance().attachedParts[moduleIndex].setStatus("PASSED")
+                        self.gui.processGraphicManager.updateAll()
+                        self.gui.isBusy = False
+                        pass
+                    elif self.serialBuffer == "FAIL":
+                        # TODO: Math! But this works for now
+                        index = self.tablePosition
+                        if (index == 0): # Modules are on the odd part holders, and they are 1 indexed
+                            moduleIndex = 1
+                        elif (index == 2):
+                            moduleIndex = 2
+                        elif (index == 4):
+                            moduleIndex = 3
+                        elif (index == 6):
+                            moduleIndex = 4
+                        elif (index == 8):
+                            moduleIndex = 5
+                        elif (index == 10):
+                            moduleIndex = 6
+                        else:
+                            moduleIndex = False
+                        
+                        self.gui.LogToGUI("FAIL")
+                        self.gui.farkusTable.getConveyance().attachedParts[moduleIndex].setStatus("FAILED")
+                        self.gui.processGraphicManager.updateAll()
+                        self.gui.isBusy = False
+
+                    #self.isWaitingForSerialResponse = False
         pass
     
     def isConnected(self):
@@ -84,7 +134,7 @@ class FarkusModule():
 
     
     def sendCommand(self, command):
-	self.serialWorker.write(commandsssssssssssssssssssssssssss) # this is more like a message, but whatever
+	self.serialWorker.write(command) # this is more like a message, but whatever
         self.isWaitingForSerialResponse = False
         self.nextExpectedResponse = None # this is a dumb way to do this. It assumes that responses are 1-to-1, and limits the flexibility of these responses.  Likely to be revised soon.
         
@@ -93,6 +143,7 @@ class FarkusModule():
         self.sendCommandWithResponse("GO", "GO")
         self.expectingPassFail = True
         self.isWaitingForSerialResponse = True
+        self.isBusy = True
         # Maybe set a timer here to perform timeouts?
         
         return True
@@ -189,7 +240,7 @@ class FarkusModule():
     
     def getExpectedSerialIDString(self):
         return self.moduleType.getSerialIDString()
-        
+
     def getSerialPortIdentifier(self):
         return self.serialPortIdentifier
     
