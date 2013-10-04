@@ -109,6 +109,16 @@ class FarkusConveyance():
 		except Exception:
 			pass
 	
+	def isClearToAdvance(self): # TODO: move this to modulemanager, make adjustments for error states, RDY, etc
+		for module in self.gui.farkusTable.getModuleManager().getConnectedModules():
+			if module.isBusy is True:
+				return False
+			else:
+				pass
+		return True
+		
+		pass
+	
 	def removePartOnExit(self):
 		removedPart = self.attachedParts.pop()
 		if removedPart is not None:

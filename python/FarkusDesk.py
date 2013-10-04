@@ -97,6 +97,9 @@ class MainFrame(wx.Frame):
 	pass
     
     def onAddPart( self, event ):
+	while ( self.farkusTable.getConveyance().isClearToAdvance()  is not True ):
+		self.LogToGUI("Waiting for CTA")			# TODO: CTA should be an event thrown when all modules are done, onAddPart and onAdvance should set an indicator bit that the onCTA handler checks
+		pass
 	self.farkusTable.getConveyance().insertNewPart(1) # new brightness onboard!
 	pass
 	
