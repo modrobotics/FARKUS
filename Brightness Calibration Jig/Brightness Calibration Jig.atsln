@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Brightness Calibration Jig", "Brightness Calibration Jig\Brightness Calibration Jig.cppproj", "{EFDAB5DE-3E81-47A9-B195-6095EA6BEDEC}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{EFDAB5DE-3E81-47A9-B195-6095EA6BEDEC}.Debug|AVR.ActiveCfg = Debug|AVR
+		{EFDAB5DE-3E81-47A9-B195-6095EA6BEDEC}.Debug|AVR.Build.0 = Debug|AVR
+		{EFDAB5DE-3E81-47A9-B195-6095EA6BEDEC}.Release|AVR.ActiveCfg = Release|AVR
+		{EFDAB5DE-3E81-47A9-B195-6095EA6BEDEC}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

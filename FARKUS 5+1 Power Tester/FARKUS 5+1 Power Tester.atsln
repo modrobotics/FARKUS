@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "FARKUS 5+1 Power Tester", "FARKUS 5+1 Power Tester\FARKUS 5+1 Power Tester.cppproj", "{CB6C2E4D-0D8C-46A9-9169-83B78AC85809}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CB6C2E4D-0D8C-46A9-9169-83B78AC85809}.Debug|AVR.ActiveCfg = Debug|AVR
+		{CB6C2E4D-0D8C-46A9-9169-83B78AC85809}.Debug|AVR.Build.0 = Debug|AVR
+		{CB6C2E4D-0D8C-46A9-9169-83B78AC85809}.Release|AVR.ActiveCfg = Release|AVR
+		{CB6C2E4D-0D8C-46A9-9169-83B78AC85809}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
