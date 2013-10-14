@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{E66E83B9-2572-4076-B26E-6BE79FF3018A}") = "Brightness Tester Prototype", "Brightness Tester Prototype\Brightness Tester Prototype.cppproj", "{4D2F222E-4905-4949-B2B2-92CBB167ED4C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{4D2F222E-4905-4949-B2B2-92CBB167ED4C}.Debug|AVR.ActiveCfg = Debug|AVR
+		{4D2F222E-4905-4949-B2B2-92CBB167ED4C}.Debug|AVR.Build.0 = Debug|AVR
+		{4D2F222E-4905-4949-B2B2-92CBB167ED4C}.Release|AVR.ActiveCfg = Release|AVR
+		{4D2F222E-4905-4949-B2B2-92CBB167ED4C}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
