@@ -16,8 +16,8 @@ class SerialWorkerThread0(Thread):
 		self._moduleLocation = moduleLocation
 		self._moduleLongName = moduleLongName
 		self.module = module  # should eventually replace the specific data above
-		#self.threadID = moduleLocation		# probably not needed
-		#self.name = moduleLocation			# probably not needed
+		#self.threadID = moduleLocation	# probably not needed
+		#self.name = moduleLocation		# probably not needed
 		self._want_abort = 0
 		
 		self.wxEventID = wxEventID
@@ -40,20 +40,24 @@ class SerialWorkerThread0(Thread):
 					self.ser.close()
 					wx.PostEvent(self._notify_window, SerialResultEventHandler.SerialResultEvent0(None, self._moduleType, self._moduleLocation, self._moduleLongName, self.wxEventID, self.module))
 					return
+				#self.ser.timeout = 0.1
 				data = self.ser.read(1) #read 1 byte
 				if len(data) > 0:
+					#self.ser.timeout = 0
 					wx.PostEvent(self._notify_window, SerialResultEventHandler.SerialResultEvent0(data, self._moduleType, self._moduleLocation, self._moduleLongName, self.wxEventID, self.module))
-				sleep(0.1)
-				#while 1==1:
-				#	self.ser.write('A')
+				
+				
 			except Exception as e:
+				#self.ser.timeout = 0
+				self.ser.close()
 				wx.PostEvent(self._notify_window, SerialResultEventHandler.SerialResultEvent0("$$$COMMFAULT$$$"+str(e), self._moduleType, self._moduleLocation, self._moduleLongName, self.wxEventID, self.module))
 				return
-        def setModule(self, module):
+		
+	def setModule(self, module):
 		self.module = module
-	
+		
 	def write(self, stringToWrite):
 		self.ser.write(stringToWrite) 
-    
+	
 	def abort(self):
 		self._want_abort = 1

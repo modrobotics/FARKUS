@@ -11,7 +11,7 @@ import time
 class FarkusConveyance():
 	"Class to define the Conveyance on a FARKUS Table"
 	def __init__(self, serialPortIdentifier, partTypeManager, gui):
-        
+		
 		self.name = "***FARKUS-Conveyance"
 		self.serialIDString = "`0000"
 		self.partHolderCount = 10  # one less than actual so that pop()'s occur on the exit ramp
@@ -28,15 +28,15 @@ class FarkusConveyance():
 		self.serialWorker = None
 		#self.isConnected = False
 		self.isReady=False
-		self.configState = None		
+		self.configState = None	
 		self.partTypeManager = partTypeManager
 		self.gui = gui
-	
+		
 		# Setup Serial, connect, set isConnected via function
 		
 		# Wait for RDY, set is_ready, is_ready event
 		pass
-	
+		
 	def isConnected(self):
 		try:
 			if self.serialWorker.ser.isOpen() is True:
@@ -54,7 +54,7 @@ class FarkusConveyance():
 		# Disconnect Serial
 		# Set self to false
 		pass
-		
+	
 	# adds the part, shifts the parts in the attachedParts array, advances the conveyance
 	def insertNewPart(self, partTypeId):
 		if self.allowPartsInIntermediatePositions is False:
@@ -64,19 +64,19 @@ class FarkusConveyance():
 		self.removePartOnExit()
 		self.advanceForward()
 		self.partsInProcess+=1 #increment attached part counter
-				
+			
 		# Wait here for a second to allow the conveyance to actually move before telling modules to go
 		# TODO: Query for completion command.  I thought about putting this in self.advanceForward()
 		# but I want the GUI to update quickly
 		time.sleep(0.5)
 
-                self.gui.processGraphicManager.updatePartInformation()
+		self.gui.processGraphicManager.updatePartInformation()
 		self.gui.processGraphicManager.updateStatusBar()
 
 		return True
 	
-		pass
-		
+	pass
+	
 	def getPartsInProcess(self):
 		return self.partsInProcess;
 	
@@ -85,26 +85,26 @@ class FarkusConveyance():
 		self.advanceForward()
 		self.removePartOnExit()
 		self.gui.processGraphicManager.updatePartInformation()
-	
+		
 	def insertEmptyPartHolder(self):
 		try:
 			if self.allowPartsInIntermediatePositions is False:
 				self.skipIntermediatePartHolder()
-			
-			self.attachedParts.appendleft(None)
-			self.advanceForward()
-			self.removePartOnExit()
-			
-			
-			# Wait here for a second to allow the conveyance to actually move before telling modules to go
-			# TODO: Query for completion command. I thought about putting this in self.advanceForward()
-			# but I want the GUI to update quickly
-			time.sleep(0.5)
+				
+				self.attachedParts.appendleft(None)
+				self.advanceForward()
+				self.removePartOnExit()
+				
+				
+				# Wait here for a second to allow the conveyance to actually move before telling modules to go
+				# TODO: Query for completion command. I thought about putting this in self.advanceForward()
+				# but I want the GUI to update quickly
+				time.sleep(0.5)
 
-			self.gui.processGraphicManager.updatePartInformation()
-			self.gui.processGraphicManager.updateStatusBar()
-			
-			return True
+				self.gui.processGraphicManager.updatePartInformation()
+				self.gui.processGraphicManager.updateStatusBar()
+				
+				return True
 		
 		except Exception:
 			pass
@@ -116,7 +116,6 @@ class FarkusConveyance():
 			else:
 				pass
 		return True
-		
 		pass
 	
 	def removePartOnExit(self):
@@ -130,7 +129,7 @@ class FarkusConveyance():
 				status = " FAILED one or more tests."
 			else:
 				status = " finished with indeterminate status."
-					
+				
 			self.gui.LogToGUI("Part on Exit Ramp (6+) with Serial Number # " + str(removedPart.getSerialNumber()) + status)
 			self.partsInProcess-=1 #decrement attached part counter
 			self.gui.processGraphicManager.updateStatusBar()
@@ -139,13 +138,13 @@ class FarkusConveyance():
 	def getConnectedPartByPartHolder(self, holderIndex):
 		try:
 			foundPart = self.attachedParts[holderIndex]
-		#if(foundPart is not None):
+			#if(foundPart is not None):
 			return foundPart
 		except:
 			pass
-		#else:
-		#	return False
-		
+			#else:
+			#	return False
+			
 		
 	def getConnectedParts(self):
 		return self.attachedParts
@@ -156,7 +155,7 @@ class FarkusConveyance():
 		
 		#TODO: check for echo and bool return
 		return True;
-	
+		
 	def advanceForward(self):
 		self.setConfigState(0)  # Go forward TODO: constants for commands
 		time.sleep(0.5)
@@ -166,12 +165,12 @@ class FarkusConveyance():
 		self.setConfigState(1)  # Go backward TODO: constants for commands
 		time.sleep(0.5)
 		self.go()
-	
+		
 	def eStop(self):
 		#Command to serial, bool
 		self.serialWorker.write("ESTOP")
 		pass
-	    
+			
 	def configModule(self, state):
 		self.serialWorker.write("C" + str(self.configState))
 		return True
@@ -179,20 +178,20 @@ class FarkusConveyance():
 	def blinkForID(self):
 		#Command to serial, bool
 		pass
-	
+		
 	def getActualModuleId(self):
 		#command to serial return
 		self.serialWorker.write("I")
 		pass
 	
 	def getName(self):
-	    return self.name
+		return self.name
 	
 	def setName(self, name):
-	    self.name = name
-	    
+		self.name = name
+		
 	def getConfigState(self):
-	    return self.configState
+		return self.configState
 	
 	def setConfigState(self, configState):
 		if(configState != self.configState):
