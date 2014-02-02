@@ -338,8 +338,10 @@ class MainFrame(wx.Frame):
 		sizer.Add(notebook, wx.ALL, wx.EXPAND)
 		panel.SetSizer(sizer)
 		self.logDisplay = notebook.getSystemLogger()
+		
 		self.Layout()
 		self.Show()
+		
 		
 		# Initialize FARKUS Manager Singletons
 		self.farkusTable = FarkusStandalone.FarkusStandalone(self);
@@ -352,6 +354,7 @@ class MainFrame(wx.Frame):
 		#png = wx.Image(backgroundPath, wx.BITMAP_TYPE_ANY).ConvertToBitmap()
 		#pngBitMap = wx.StaticBitmap(self, -1, png, (10, 5), (png.GetWidth(), png.GetHeight()))
 		#pngBitMap.Bind( wx.EVT_LEFT_DOWN, self.__OnLeftDown) 
+		
 		
 		# Create menus...
 		self.menubar = wx.MenuBar()
@@ -380,6 +383,8 @@ class MainFrame(wx.Frame):
 		self.connectToTestbedCubeletsSubMenu.AppendItem(wx.MenuItem(self.connectToTestbedCubeletsSubMenu, ID_OPTIONS_SELECT_MODULE, 'Legacy: Cubelets Bluetooth v10 Bootloader (ATMEGA162) (Standalone)', ''))
 		self.connectToTestbedCubeletsSubMenu.AppendItem(wx.MenuItem(self.connectToTestbedCubeletsSubMenu, ID_OPTIONS_SELECT_MODULE, 'Legacy: Cubelets Bluetooth v10 Test/Config Routine (ATMEGA162) (Standalone)', ''))
 		
+		
+		
 		self.connectToTestbedMossSubMenu = wx.Menu()
 		self.connectToTestbedSubMenu.AppendMenu(ID_OPTIONS_CONNECT_TO_TESTBED_MOSS, 'MOSS', self.connectToTestbedMossSubMenu)
 		
@@ -402,8 +407,8 @@ class MainFrame(wx.Frame):
 		self.connectToTestbedMossSubMenu.AppendItem(self.moduleMossSpinMain)
 		
 		# Create the logger output box
-		self.logDisplay = wx.TextCtrl(self, id = -1, pos = (10, 375), size = (10, 10), style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_AUTO_URL)
-		self.linesInLogBuffer = 0 # initialize a counter variable
+		#self.logDisplay = wx.TextCtrl(self, id = -1, pos = (10, 375), size = (10, 10), style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_AUTO_URL)
+		#self.linesInLogBuffer = 0 # initialize a counter variable
 		
 		# Bind GUI events to their handlers
 		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.moduleMossAnglePot)
@@ -449,7 +454,7 @@ class MainFrame(wx.Frame):
 		
 		#self.processGraphicManager.setModuleManager(self.farkusTable.getModuleManager())
 		
-			
+		
 		# Redirect STDOUT, STDERR to our logger now that we've rendered
 		#sys.stdout=RedirectSTDOUT_STDERR(self)
 		#sys.stderr=RedirectSTDOUT_STDERR(self)
