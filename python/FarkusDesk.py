@@ -18,6 +18,7 @@ from serial.serialutil import SerialException
 from serialutils import full_port_name, enumerate_serial_ports, FARKUS_get_serial_ID_string
 
 import SerialWorker
+import ProgrammerWorkerThread
 import FarkusModuleType
 import FarkusModuleTypeManager
 import FarkusModule
@@ -88,17 +89,6 @@ class ConfigModuleEvent(wx.PyEvent):
 		self.SetEventType(EVT_CONFIGMODULE_ID)
 		self.moduleLocation = moduleLocation
 
-
-#class SerialResultEvent0(wx.PyEvent):
-#	def __init__(self, data, moduleType, moduleLocation, moduleLongName):
-#		wx.PyEvent.__init__(self)
-#		self.SetEventType(EVT_NEWSERIALDATA0_ID)
-#		self.data = data
-#		self.moduleLocation = moduleLocation
-#		self.moduleType = moduleType
-#		self.moduleLongName = moduleLongName
-
-
 ########################################################################
 class SystemTabPanel(wx.Panel):
 	"""
@@ -113,13 +103,15 @@ class SystemTabPanel(wx.Panel):
 		#txtTwo = wx.TextCtrl(self, wx.ID_ANY, "")
 		
 		# Create the logger output box
-		messagesHeader = wx.StaticText(self, wx.ID_ANY, 'Messages (Newest at Top) ', pos=(10,360))
-		self.logDisplay = wx.TextCtrl(self, wx.ID_ANY, pos = (10, 375), size = (701, 350), style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_AUTO_URL)
+		messagesHeader = wx.StaticText(self, wx.ID_ANY, 'Messages (Newest at Top) ', pos=(300,360))
+		self.logDisplay = wx.TextCtrl(self, wx.ID_ANY, pos = (300, 375), size = (401, 350), style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_AUTO_URL)
+		self.logDisplay2 = wx.TextCtrl(self, wx.ID_ANY, pos = (300, 375), size = (401, 350), style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_AUTO_URL)
 		#linesInLogBuffer = 0 # initialize a counter variable
-		
+	
 		sizer = wx.BoxSizer(wx.VERTICAL)
 		sizer.Add(messagesHeader, 0, wx.ALL, 5)
 		sizer.Add(self.logDisplay, 1, wx.ALL, 5)
+		sizer.Add(self.logDisplay2, 1, wx.LEFT, 5)
 		self.SetSizer(sizer)
 	def MessageToLogger(self, text):
 		self.logDisplay.SetValue(text)
@@ -178,43 +170,44 @@ class NotebookDemo(wx.Notebook):
 	
 	#----------------------------------------------------------------------
 	def __init__(self, parent):
-	    wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=
-				 #wx.BK_DEFAULT
-				 wx.BK_TOP 
-				 #wx.BK_BOTTOM
-				 #wx.BK_LEFT
-				 #wx.BK_RIGHT
-				 )
-	
-	    # Create the first tab and add it to the notebook
-	    self.tabOne = SystemTabPanel(self)
-	    self.AddPage(self.tabOne, "** System ** ")
-	    #parent.logDisplay = self.tabOne.GetLoggerPanel()
+		wx.Notebook.__init__(self, parent, id=wx.ID_ANY, style=
+				     #wx.BK_DEFAULT
+				     wx.BK_TOP 
+				     #wx.BK_BOTTOM
+				     #wx.BK_LEFT
+				     #wx.BK_RIGHT
+				     )
 	    
-	    self.tabOne.MessageToLogger("ASDASD")
-	    # Show how to put an image on one of the notebook tabs,
-	    # first make the image list:
-	    #il = wx.ImageList(16, 16)
-	    #idx1 = il.Add(images.Smiles.GetBitmap())
-	    #self.AssignImageList(il)
-	
-	    # now put an image on the first tab we just created:
-	    #self.SetPageImage(0, idx1)
-	
-	    # Create and add the second tab
-	    tabTwo = TabPanel2(self)
-	    tabTwo.SetBackgroundColour("Red")
-	    self.AddPage(tabTwo, "TabTwo")
+		# Create the first tab and add it to the notebook
+		self.tabOne = SystemTabPanel(self)
+		self.AddPage(self.tabOne, "** System ** ")
+		#parent.logDisplay = self.tabOne.GetLoggerPanel()
+		
+		self.tabOne.MessageToLogger("ASDASD")
+		# Show how to put an image on one of the notebook tabs,
+		# first make the image list:
+		#il = wx.ImageList(16, 16)
+		#idx1 = il.Add(images.Smiles.GetBitmap())
+		#self.AssignImageList(il)
+	    
+		# now put an image on the first tab we just created:
+		#self.SetPageImage(0, idx1)
+	    
+		# Create and add the second tab
+		tabTwo = TabPanel2(self)
+		tabTwo.SetBackgroundColour("Red")
+		self.AddPage(tabTwo, "TabTwo")
+		
+		# Create and add the second tab
+		tabThree = TabPanel3(self)
+		tabThree.SetBackgroundColour("Blue")
+		self.AddPage(tabThree, "TabThree")
 	    
 	    
-	    # Create and add the second tab
-	    tabThree = TabPanel3(self)
-	    tabThree.SetBackgroundColour("Blue")
-	    self.AddPage(tabThree, "TabThree")
 	
-	    self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
-	    self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
-	
+	'''
+		self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGED, self.OnPageChanged)
+		self.Bind(wx.EVT_NOTEBOOK_PAGE_CHANGING, self.OnPageChanging)
 	def OnPageChanged(self, event):
 	    old = event.GetOldSelection()
 	    new = event.GetSelection()
@@ -228,7 +221,7 @@ class NotebookDemo(wx.Notebook):
 	    sel = self.GetSelection()
 	    print 'OnPageChanging, old:%d, new:%d, sel:%d\n' % (old, new, sel)
 	    event.Skip()
-	
+	'''
 	
 
 
@@ -436,7 +429,16 @@ class MainFrame(wx.Frame):
 		self.serialWorkers.append(None)
 		self.serialWorkers.append(None)
 		self.serialWorkers.append(None)
-	   
+	
+		# Variable to hold worker threads
+		self.programmerWorkers = []
+		self.programmerWorkers.append(None)
+		self.programmerWorkers.append(None)
+		self.programmerWorkers.append(None)
+		self.programmerWorkers.append(None)
+		self.programmerWorkers.append(None)
+		self.programmerWorkers.append(None)
+
 		# Declare Thread events for inter-thread communication
 		EVT_NEWSERIALDATA0(self,self.OnNewSerialData)
 		#EVT_CONFIGMODULE(self,self.ConfigModule)
@@ -456,8 +458,8 @@ class MainFrame(wx.Frame):
 		
 		
 		# Redirect STDOUT, STDERR to our logger now that we've rendered
-		#sys.stdout=RedirectSTDOUT_STDERR(self)
-		#sys.stderr=RedirectSTDOUT_STDERR(self)
+		sys.stdout=RedirectSTDOUT_STDERR(self)
+		sys.stderr=RedirectSTDOUT_STDERR(self)
 		
 	def OnSelectModule(self, event):
 		self.LogToGUI("Changing Module")
@@ -551,10 +553,18 @@ class MainFrame(wx.Frame):
 		
 		for i in range(len(self.availablePorts)):
 			temp = None
+			
+			# Create and set the serial worker
 			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, self.availablePorts[i], self.availableModuleTypes[i], self.availableModuleLocations[i], self.availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID, None)
 			temp = self.farkusTable.getModuleManager().getModuleBySerialPort(self.availablePorts[i])
 			temp.setSerialWorker(self.serialWorkers[i]) #bind serialworker and module
 			self.serialWorkers[i].setModule(temp)
+
+
+			# Create and set the system (programmer) worker
+			self.programmerWorkers[i] = ProgrammerWorkerThread.ProgrammerWorkerThread(self, False)
+			temp.setProgrammerWorker(self.programmerWorkers[i]) #bind serialworker and module
+			self.programmerWorkers[i].setModule(temp)
 
 		# Everything is connected, update our UI	
 		#self.processGraphicManager.updateAll()

@@ -1,4 +1,7 @@
+import ProgrammerWorkerThread
+
 class FarkusModule():
+	import ProgrammerWorkerThread
 	"Class to define the ACTUAL Testbeds"
 	def __init__(self, moduleType, moduleTypeManager, serialPortIdentifier, gui):
 		self.isReady=False
@@ -10,6 +13,8 @@ class FarkusModule():
 		self.configState = None
 		
 		self.serialWorker = None
+		self.programmerWorker = None
+		
 		self.serialPortIdentifier = serialPortIdentifier
 		self.serialBuffer = ""
 		self.lastCommand = ""
@@ -24,7 +29,7 @@ class FarkusModule():
 		
 		# Wait for RDY, set is_ready, is_ready event
 		pass
-	    
+	
 	def QuerySerialNumber(self):
 	    self.ser.write("S")
 	    self.serialNumber = self.ser.read(4)
@@ -32,13 +37,13 @@ class FarkusModule():
 	
 	def GetSerialNumber(self):
 	    if(self.serialNumber ):
-		return self.serialNumber;
+			return self.serialNumber
 	    else:
-		try:
-		    self.QuerySerialNumber()
-		    return self.serialNumber
-		except:
-		    return "Unknown";
+			try:
+				self.QuerySerialNumber()
+				return self.serialNumber
+			except:
+				return "Unknown";
 	
     
 	def onNewMessageFromSerial(self, event):
@@ -267,6 +272,12 @@ class FarkusModule():
 	def setSerialWorker(self, serialWorker):
 		self.serialWorker = serialWorker
 	
+	def setProgrammerWorker(self, programmerWorker):
+		self.programmerWorker = programmerWorker
+	    
+	def getProgrammerWorker(self):
+		return self.programmerWorker
+		
 	def getExpectedSerialIDString(self):
 		return self.moduleType.getSerialIDString()
 

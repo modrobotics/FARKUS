@@ -30,9 +30,10 @@ class FarkusModuleTypeManager():
 		#***************************************
 		
 		elif event.data == "G":
-			print "Got GO Command From a distance testbed"
-			print "starting new thread to call " + event.module.moduleType.getProgrammerPath1()
-			sleep (0.1)
+			print "Programmer Starting..."
+			event.module.getProgrammerWorker().program(True)
+		
+		'''
 			if( random.choice([True, False]) ):
 				# Pass
 				print "Programming Successful"
@@ -41,6 +42,7 @@ class FarkusModuleTypeManager():
 				# Failure
 				print "Programming Failed!"
 				event.module.serialWorker.write("F");
+		'''	
 			
 		pass
 	
