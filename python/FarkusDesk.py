@@ -73,7 +73,12 @@ ID_SETTINGS_SAVE = wx.NewId()
 
 # Thread Communication Events
 EVT_NEWSERIALDATA0_ID = wx.NewId()
+EVT_NEWPROGRAMMERDATAEVENT_ID = wx.NewId()
 
+
+def EVT_NEWPROGRAMMERDATAEVENT(win, func):
+	win.Connect(-1, -1, EVT_NEWPROGRAMMERDATAEVENT_ID, func)
+	
 def EVT_NEWSERIALDATA0(win, func):
 	win.Connect(-1, -1, EVT_NEWSERIALDATA0_ID, func)
 
@@ -441,6 +446,7 @@ class MainFrame(wx.Frame):
 
 		# Declare Thread events for inter-thread communication
 		EVT_NEWSERIALDATA0(self,self.OnNewSerialData)
+		EVT_NEWPROGRAMMERDATAEVENT(self,self.OnNewProgrammerEvent)
 		#EVT_CONFIGMODULE(self,self.ConfigModule)
 		
 		# Icon Me!
@@ -553,16 +559,15 @@ class MainFrame(wx.Frame):
 		
 		for i in range(len(self.availablePorts)):
 			temp = None
-			
+			temp = self.farkusTable.getModuleManager().getModuleBySerialPort(self.availablePorts[i])
+
 			# Create and set the serial worker
 			self.serialWorkers[i] = SerialWorker.SerialWorkerThread0(self, self.availablePorts[i], self.availableModuleTypes[i], self.availableModuleLocations[i], self.availableModuleLongNames[i], EVT_NEWSERIALDATA0_ID, None)
-			temp = self.farkusTable.getModuleManager().getModuleBySerialPort(self.availablePorts[i])
 			temp.setSerialWorker(self.serialWorkers[i]) #bind serialworker and module
 			self.serialWorkers[i].setModule(temp)
 
-
 			# Create and set the system (programmer) worker
-			self.programmerWorkers[i] = ProgrammerWorkerThread.ProgrammerWorkerThread(self, False)
+			self.programmerWorkers[i] = ProgrammerWorkerThread.ProgrammerWorkerThread(self, False, EVT_NEWPROGRAMMERDATAEVENT_ID)
 			temp.setProgrammerWorker(self.programmerWorkers[i]) #bind serialworker and module
 			self.programmerWorkers[i].setModule(temp)
 
@@ -580,9 +585,9 @@ class MainFrame(wx.Frame):
 		# maybe wait a hot second here for the bootloader to take a chill pill.
 		s.write("I")
 		
-		identity = s.read(5)
+		identity = s.read(4)
 		identity = identity.strip(' \t\n\r')
-
+		
 		if(len(identity) > 0):
 			# We got something back
 			
@@ -617,17 +622,14 @@ class MainFrame(wx.Frame):
 		#except serial.SerialException:
 		#	pass
 	def OnCloseSerial(self, event):
-		if self.serialWorker and self.serialWorker.isAlive() and self.serialWorker.ser.isOpen():
-			self.LogToGUI('Attempting to close Serial Connections')
-			# Close existing connections
-			for i in self.serialWorkers:
-				try:
-					if i.isAlive() and i.ser.isOpen():
-						i.abort()
-				except:
-					pass
-		else:
-			pass
+		self.LogToGUI('Attempting to close Serial Connections')
+		# Close existing connections
+		for i in self.serialWorkers:
+			try:
+				if i.isAlive() and i.ser.isOpen():
+					i.abort()
+			except:
+				pass
 	
 	def OnNewSerialData(self, event): # This handler is shared by all of the serialworkers.  Retrieve details on which from the `event` variable
 		if event.module is not None:
@@ -670,7 +672,68 @@ class MainFrame(wx.Frame):
 		else:
 			#self.LogToGUI('Message from Location ' + str(1) + ': ' + event.data)
 			pass
-	
+		
+	def OnNewProgrammerEvent(self, event):
+		if event.module is not None:
+			pass
+		else:
+			self.LogToGUI("Received a message from an orphaned Programmer worker")
+			pass
+		
+		if event.returnCode == 0:
+			self.LogToGUI('Programming SUCCESS')
+			# Mark ID as used.
+			if(event.useID):
+			    #CIMSClientManager.onBootloadSuccess(self)
+			    pass
+			# If we're in automated mode, send the PASS command
+			if self.isAutoMode:
+				try:
+				#self.serialWorker.write("P")
+					pass
+				except Exception:
+					self.LogToGUI("Failed to send command P to Carousel")
+			else:
+			    pass
+			
+			try:
+				if(str(sys.argv[1]) == "-s" ):
+					self.QuitApp(0)
+			except:
+				pass
+			
+		elif event.returnCode == 1:
+		    # Failed to compile
+		    self.LogToGUI('Programming FAILED: Failed to Compile (E#%s)' % event.returnCode)
+		elif event.returnCode == 2:
+		    # Failed to burn fuses (AVR only)
+		    self.LogToGUI('Programming FAILED: Failed to Burn Fuses (E#%s)' % event.returnCode)
+		elif event.returnCode == 3:
+		    # Failed to flash
+		    self.LogToGUI('Programming FAILED: Failed to Flash (E#%s)' % event.returnCode)
+		elif event.returnCode == 4:
+		    # ID Database Fault
+		    self.LogToGUI('Programming FAILED: ID Database Fault (E#%s)' % event.returnCode)
+		elif event.returnCode == 5:
+		    # Failed to update Emergency ID Datastore (EIDDS?)
+		    self.LogToGUI('Programming FAILED: Failed to update EIDDS (E#%s)' % event.returnCode)
+		elif event.returnCode == 6:
+		    # Unknown Failure
+		    self.LogToGUI('Programming FAILED: An Unknown Failure Occurred (E#%s)' % event.returnCode)
+		elif event.returnCode == 7:
+		    # Unknown Failure
+		    self.LogToGUI('Programming FAILED: Invalid Programmer Action Module Specified !!!(E#%s)' % event.returnCode)
+		elif event.returnCode == 8:
+		    # Unknown Failure
+		    self.LogToGUI('Programming FAILED: No Programmer Action Module (PAM) has been selected (E#%s)' % event.returnCode)
+		# Close the CIMS thread
+		#wx.PostEvent(self, CIMSResultEvent("$$$CIMSDONE$$$"))
+		    
+		
+		# General Failure handler
+		if (event.returnCode > 0):
+			event.module.serialWorker.write("F")
+		
 	def OnEditSettings(self, event):
 		EditSettingsDialog(self, -1, 'Edit Settings')
 	

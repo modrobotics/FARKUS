@@ -9,41 +9,44 @@ class FarkusModuleTypeManager():
 	#  THIS SHOULD GET MOVED OUT INTO ANOTHER FILE  / CLASS
 	def serialEventHandlerStandardTestbed(self, event):
 		# TODO: Determine system/module actions split
-		
-		if event.data == "$$$OPEN$$$":
-			self.LogToGUI("Connection Established: "+event.moduleLongName+" @ Location "+str(event.moduleLocation));
+		try:
+			if event.data == "$$$OPEN$$$":
+				self.LogToGUI("Connection Established: "+event.moduleLongName+" @ Location "+str(event.moduleLocation));
+				
+				pass
+			elif event.data == "$$$CONNECTFAIL$$$":
+				self.LogToGUI("Connection to "+event.moduleLongName+ " @ Location "+str(event.moduleLocation)+ " was lost.");
+				
+				# Remove the module from the table?  Or at least mark it inactive
+				
+				# Update GUI
+				self.processGraphicManager.updateAll()
+				pass
+			elif event.data[:15] == "$$$COMMFAULT$$$":
+				print "Connection to " + event.moduleLongName + "(Serial#" + event.module.GetSerialNumber() + ") HAS BEEN LOST"
 			
-			pass
-		elif event.data == "$$$CONNECTFAIL$$$":
-			self.LogToGUI("Connection to "+event.moduleLongName+ " @ Location "+str(event.moduleLocation)+ " was lost.");
+			#****************************
+			# Commands below  ****************
+			#***************************************
 			
-			# Remove the module from the table?  Or at least mark it inactive
+			elif event.data == "G":
+				print "Programmer Starting..."
+				event.module.getProgrammerWorker().program(True)
 			
-			# Update GUI
-			self.processGraphicManager.updateAll()
-			pass
-		elif event.data[:15] == "$$$COMMFAULT$$$":
+			'''
+				if( random.choice([True, False]) ):
+					# Pass
+					print "Programming Successful"
+					event.module.serialWorker.write("P");
+				else:
+					# Failure
+					print "Programming Failed!"
+					event.module.serialWorker.write("F");
+			'''	
+				
+		except:
 			print "Connection to " + event.moduleLongName + "(Serial#" + event.module.GetSerialNumber() + ") HAS BEEN LOST"
-		
-		#****************************
-		# Commands below  ****************
-		#***************************************
-		
-		elif event.data == "G":
-			print "Programmer Starting..."
-			event.module.getProgrammerWorker().program(True)
-		
-		'''
-			if( random.choice([True, False]) ):
-				# Pass
-				print "Programming Successful"
-				event.module.serialWorker.write("P");
-			else:
-				# Failure
-				print "Programming Failed!"
-				event.module.serialWorker.write("F");
-		'''	
-			
+
 		pass
 	
 
@@ -79,16 +82,16 @@ class FarkusModuleTypeManager():
 									  "Testbed",
 									  "Standalone",
 									  self.serialEventHandlerStandardTestbed,
-									  "PathTO the PROGRAMMER! for distance"))
+									  "src/hex/MOSS-Distance-v1.0.0.hex"))
 		
-		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(54444445,
-									  "1001",
+		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444445,
+									  "0123",
 									  "MOSS - Flashlight",
 									  "Flashlight prgm/test",
 									  "Testbed",
 									  "Standalone",
 									  self.serialEventHandlerStandardTestbed,
-									  "PathTO the PROGRAMMER! for flashlight"))
+									  "src/hex/MOSS-Flashlight-v1.0.0.hex"))
 		
 		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444446,
 									  "1002",
@@ -97,7 +100,7 @@ class FarkusModuleTypeManager():
 									  "Testbed",
 									  "Standalone",
 									  self.serialEventHandlerStandardTestbed,
-									  "PathTO the PROGRAMMER! for BT Main"))
+									  "src/hex/MOSS-BTMain-v1.0.0.hex"))
 
 	def getModuleByLocation(self, location):
 		pass

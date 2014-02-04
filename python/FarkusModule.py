@@ -37,14 +37,14 @@ class FarkusModule():
 	
 	def GetSerialNumber(self):
 	    if(self.serialNumber ):
-			return self.serialNumber
+		return self.serialNumber
 	    else:
-			try:
-				self.QuerySerialNumber()
-				return self.serialNumber
-			except:
-				return "Unknown";
-	
+		try:
+			self.QuerySerialNumber()
+			return self.serialNumber
+		except:
+			return "Unknown";
+
     
 	def onNewMessageFromSerial(self, event):
 	    

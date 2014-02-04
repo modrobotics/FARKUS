@@ -4,20 +4,22 @@ from wx import PyEvent
 
 
 class ProgrammerResultEvent(PyEvent):
-    def __init__(self, returnCode, useID):
+    def __init__(self, returnCode, useID, eventTypeId, module):
         PyEvent.__init__(self)
-        #self.SetEventType(123456789)
+        self.SetEventType(eventTypeId)
         self.returnCode = returnCode
         self.useID = useID
-	self.module = None
+	self.module = module
 	
 class ProgrammerWorkerThread(Thread):
-    def __init__(self, notify_window, CubeletID):
-
+    def __init__(self, notify_window, CubeletID, eventId ):
+	self.eventId = eventId
         Thread.__init__(self)
         self._notify_window = notify_window
         self.CubeletID = CubeletID
         self.start()
+	self.module = None
+	
     def run(self):
 	
         while True:
@@ -25,11 +27,11 @@ class ProgrammerWorkerThread(Thread):
             pass
        
     def program(self, useID):
-	print "Hello from the programmer thread!We're calling " + self.getModule().moduleType.getProgrammerPath1()
+	print "We're calling " + self.getModule().moduleType.getProgrammerPath1()
         # The CIMS manager should refuse to load if there is no Programmer Action Module selected, but just in case....
         if None is None:
             # Invalid payload or none selected
-            PostEvent(self._notify_window, ProgrammerResultEvent(7, False))
+            PostEvent(self._notify_window, ProgrammerResultEvent(7, False, self.eventId, self.module))
         else:
             try:
 		# This startupinfo crazyness hides the command window from the user
@@ -37,9 +39,9 @@ class ProgrammerWorkerThread(Thread):
 		startupinfo = subprocess.STARTUPINFO()
 		startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
                 returnCode = subprocess.call([self.getModule().moduleType.getProgrammerPath1(), str(self.CubeletID)], startupinfo=startupinfo)
-                PostEvent(self._notify_window, ProgrammerResultEvent(returnCode, useID))
+                PostEvent(self._notify_window, ProgrammerResultEvent(returnCode, useID, self.eventId, self.module))
             except:
-                PostEvent(self._notify_window, ProgrammerResultEvent(6, False))
+                PostEvent(self._notify_window, ProgrammerResultEvent(6, False, self.eventId, self.module))
         self.abort()
     
     def setModule(self, module):
