@@ -45,7 +45,15 @@ class FarkusModule():
 		except:
 			return "Unknown";
 
-    
+	def onNewMessageFromProgrammer(self, event):
+	    if self.moduleType.getTypeS() is "Standalone":
+		    # Testbeds, and what not define their own event handlers in this version!
+		    self.moduleType.programmerEventHandler(event)
+		    
+		    # Current version of testbed comm spec doesn't /r/n terminate lines, but probably should. 
+	    else:
+		print "Got message from not-standalone programmer!"
+	
 	def onNewMessageFromSerial(self, event):
 	    
 		if self.moduleType.getTypeS() is "Standalone":

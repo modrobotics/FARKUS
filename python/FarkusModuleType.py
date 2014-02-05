@@ -1,6 +1,6 @@
 class FarkusModuleType():
 	"Class to define the types of modules that can be used on a FARKUS Table"
-	def __init__(self, id, serialIDString, name, shortName1, shortName2, typeS, serialEventHandler, programmerPath1):
+	def __init__(self, id, serialIDString, name, shortName1, shortName2, typeS, serialEventHandler, programmerEventHandler, programmerPath1):
 		self.id = id
 		self.serialIDString = serialIDString
 		self.name = name
@@ -9,6 +9,7 @@ class FarkusModuleType():
 		self.typeS = typeS
 		self.programmerPath1 = programmerPath1
 		self.serialEventHandler = serialEventHandler
+		self.programmerEventHandler = programmerEventHandler
 		#self.version1 = version1
 		#self.version2 = version2  # Not implemented yet
 		#self.version3 = version3

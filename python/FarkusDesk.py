@@ -567,7 +567,7 @@ class MainFrame(wx.Frame):
 			self.serialWorkers[i].setModule(temp)
 
 			# Create and set the system (programmer) worker
-			self.programmerWorkers[i] = ProgrammerWorkerThread.ProgrammerWorkerThread(self, False, EVT_NEWPROGRAMMERDATAEVENT_ID)
+			self.programmerWorkers[i] = ProgrammerWorkerThread.ProgrammerWorkerThread(self, False, EVT_NEWPROGRAMMERDATAEVENT_ID, BASE_PATH)
 			temp.setProgrammerWorker(self.programmerWorkers[i]) #bind serialworker and module
 			self.programmerWorkers[i].setModule(temp)
 
@@ -680,60 +680,13 @@ class MainFrame(wx.Frame):
 			self.LogToGUI("Received a message from an orphaned Programmer worker")
 			pass
 		
-		if event.returnCode == 0:
-			self.LogToGUI('Programming SUCCESS')
-			# Mark ID as used.
-			if(event.useID):
-			    #CIMSClientManager.onBootloadSuccess(self)
-			    pass
-			# If we're in automated mode, send the PASS command
-			if self.isAutoMode:
-				try:
-				#self.serialWorker.write("P")
-					pass
-				except Exception:
-					self.LogToGUI("Failed to send command P to Carousel")
-			else:
-			    pass
-			
-			try:
-				if(str(sys.argv[1]) == "-s" ):
-					self.QuitApp(0)
-			except:
-				pass
-			
-		elif event.returnCode == 1:
-		    # Failed to compile
-		    self.LogToGUI('Programming FAILED: Failed to Compile (E#%s)' % event.returnCode)
-		elif event.returnCode == 2:
-		    # Failed to burn fuses (AVR only)
-		    self.LogToGUI('Programming FAILED: Failed to Burn Fuses (E#%s)' % event.returnCode)
-		elif event.returnCode == 3:
-		    # Failed to flash
-		    self.LogToGUI('Programming FAILED: Failed to Flash (E#%s)' % event.returnCode)
-		elif event.returnCode == 4:
-		    # ID Database Fault
-		    self.LogToGUI('Programming FAILED: ID Database Fault (E#%s)' % event.returnCode)
-		elif event.returnCode == 5:
-		    # Failed to update Emergency ID Datastore (EIDDS?)
-		    self.LogToGUI('Programming FAILED: Failed to update EIDDS (E#%s)' % event.returnCode)
-		elif event.returnCode == 6:
-		    # Unknown Failure
-		    self.LogToGUI('Programming FAILED: An Unknown Failure Occurred (E#%s)' % event.returnCode)
-		elif event.returnCode == 7:
-		    # Unknown Failure
-		    self.LogToGUI('Programming FAILED: Invalid Programmer Action Module Specified !!!(E#%s)' % event.returnCode)
-		elif event.returnCode == 8:
-		    # Unknown Failure
-		    self.LogToGUI('Programming FAILED: No Programmer Action Module (PAM) has been selected (E#%s)' % event.returnCode)
-		# Close the CIMS thread
-		#wx.PostEvent(self, CIMSResultEvent("$$$CIMSDONE$$$"))
-		    
-		
-		# General Failure handler
-		if (event.returnCode > 0):
-			event.module.serialWorker.write("F")
-		
+		if event.module is not None:
+			# we have somewhere to route this event
+			event.module.onNewMessageFromProgrammer(event)
+		else:
+			#self.LogToGUI("Received a message from an orphaned SerialWorker")
+			pass
+				
 	def OnEditSettings(self, event):
 		EditSettingsDialog(self, -1, 'Edit Settings')
 	
