@@ -1,7 +1,7 @@
 from threading import *
 from wx import PostEvent
 from wx import PyEvent
-
+import subprocess
 
 class ProgrammerResultEvent(PyEvent):
     def __init__(self, returnCode, useID, eventTypeId, module):
@@ -28,26 +28,13 @@ class ProgrammerWorkerThread(Thread):
             pass
        
     def program(self, useID):
-	self.pamPath = self.basePath + self.getModule().moduleType.getProgrammerPath1()
-	print "We're calling " + self.pamPath
+	    self.pamPath = self.basePath + self.getModule().moduleType.getProgrammerPath1()
 
-        # The CIMS manager should refuse to load if there is no Programmer Action Module selected, but just in case....
-        #if None is None:
-        #    # Invalid payload or none selected
-        #    PostEvent(self._notify_window, ProgrammerResultEvent(7, False, self.eventId, self.module))
-        #else:
-	try:
-	    #pass
-	    # This startupinfo crazyness hides the command window from the user
-	    startupinfo = None
-	    startupinfo = subprocess.STARTUPINFO()
-	    startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-	    returnCode = subprocess.call([self.pamPath, str(self.CubeletID)], startupinfo=startupinfo)
-	    PostEvent(self._notify_window, ProgrammerResultEvent(returnCode, useID, self.eventId, self.module))
-	except:
-	    #pass
-	    PostEvent(self._notify_window, ProgrammerResultEvent(6, False, self.eventId, self.module))
-        #self.abort()
+	    child = subprocess.Popen(self.pamPath)
+	    streamdata = child.communicate()[0]
+	    returnCode = child.returncode
+	
+	    PostEvent(self._notify_window, ProgrammerResultEvent(returnCode, False, self.eventId, self.module))
     
     def setModule(self, module):
 	self.module = module

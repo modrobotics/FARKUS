@@ -462,16 +462,20 @@ class MainFrame(wx.Frame):
 		
 		#self.processGraphicManager.setModuleManager(self.farkusTable.getModuleManager())
 		
+		self.OnSelectModule(False)
 		
 		# Redirect STDOUT, STDERR to our logger now that we've rendered
 		sys.stdout=RedirectSTDOUT_STDERR(self)
 		sys.stderr=RedirectSTDOUT_STDERR(self)
 		
 	def OnSelectModule(self, event):
-		self.LogToGUI("Changing Module")
+		#self.LogToGUI("Searching For Modules....")
+		eventSource = False
+		try:
+			eventSource = event.GetId()
 		
-		eventSource = event.GetId()
-		
+		except:
+			pass
 		#Hacky!  
 		if eventSource == ID_OPTIONS_SELECT_MODULE_ANGLEPOT:
 			self.LogToGUI("Angle")
@@ -485,8 +489,8 @@ class MainFrame(wx.Frame):
 			self.LogToGUI("Mic")
 		elif eventSource == ID_OPTIONS_SELECT_MODULE_SPINMAIN:
 			self.LogToGUI("Spin Main")
-		else:
-			self.LogToGUI("Unknown Module")
+		#else:
+			#self.LogToGUI("Unknown Module")
 				
 		# search the serial ports for available devices
 		self.OnOpenSerial(False)
