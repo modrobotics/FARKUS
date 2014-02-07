@@ -9,13 +9,10 @@ class FarkusModuleTypeManager():
 	#  THIS SHOULD GET MOVED OUT INTO ANOTHER FILE  / CLASS
 	def programmerEventHandlerStandardTestbed(self, event):
 		if event.returnCode == 0:
-			self.LogToGUI('Programming SUCCESS')
-			event.module.serialWorker.write("P")
-			
+			print 'Programming SUCCESS'
 		elif event.returnCode == 1:
 		    # Failed to compile
-		    pass
-		    #self.LogToGUI('Programming FAILED: Failed to Compile (E#%s)' % event.returnCode)
+		    print 'Programming FAILED: Failed to Compile (E#%s)' % event.returnCode
 		elif event.returnCode == 2:
 		    # Failed to burn fuses (AVR only)
 		    print 'Programming FAILED: Failed to Burn Fuses (E#%s)' % event.returnCode
@@ -42,6 +39,8 @@ class FarkusModuleTypeManager():
 		# General Failure handler
 		if (event.returnCode > 0):
 			event.module.serialWorker.write("F")
+		else:
+			event.module.serialWorker.write("P")
 			
 	#  THIS SHOULD GET MOVED OUT INTO ANOTHER FILE  / CLASS
 	def serialEventHandlerStandardTestbed(self, event):
@@ -126,7 +125,7 @@ class FarkusModuleTypeManager():
 									  "/src/PAMs/programmer_pic.bat"))
 		
 		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444445,
-									  "0123",
+									  "1003",
 									  "MOSS - Flashlight",
 									  "Flashlight prgm/test",
 									  "Testbed",
