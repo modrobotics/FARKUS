@@ -111,9 +111,7 @@ class FarkusModuleTypeManager():
 									  False, False, False)
 					)
 	
-		
-		
-		
+	# New-style MOSS Testbeds!	
 		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444444,
 									  "1001",
 									  "MOSS - Distance",
@@ -122,7 +120,7 @@ class FarkusModuleTypeManager():
 									  "Standalone",
 									  self.serialEventHandlerStandardTestbed,
 									  self.programmerEventHandlerStandardTestbed,
-									  "/src/PAMs/programmer_pic.bat"))
+									  "/src/PAMs/MOSS-Distance.bat"))
 		
 		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444445,
 									  "1003",
@@ -145,14 +143,37 @@ class FarkusModuleTypeManager():
 									  "/src/PAMs/MOSS-Spin-Main.bat"))
 		
 		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444447,
-									  "1002",
-									  "MOSS - BT Main",
-									  "Bluetooth Main prgm/test",
+									  "1005",
+									  "MOSS - Angle-Pot",
+									  "Ang-pot prgm/test",
 									  "Testbed",
 									  "Standalone",
 									  self.serialEventHandlerStandardTestbed,
 									  self.programmerEventHandlerStandardTestbed,
-									  "src/hex/MOSS-BTMain-v1.0.0.hex"))
+									  "/src/PAMs/MOSS-Angle-Pot.bat"))
+		
+		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444448,
+									  "1008",
+									  "MOSS - Microphone",
+									  "Microphone prgm/test",
+									  "Testbed",
+									  "Standalone",
+									  self.serialEventHandlerStandardTestbed,
+									  self.programmerEventHandlerStandardTestbed,
+									  "/src/PAMs/MOSS-Microphone.bat"))
+		
+		# Brain will require some extra stuff to get the IDs onboard
+		'''
+		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444449,
+									  "1010",
+									  "MOSS - Brain Main",
+									  "Brain Main prgm/test",
+									  "Testbed",
+									  "Standalone",
+									  self.serialEventHandlerStandardTestbed,
+									  self.programmerEventHandlerStandardTestbed,
+									  "src/hex/MOSS-Brain-Main-v1.0.0.hex"))
+		'''
 
 	def getModuleByLocation(self, location):
 		pass
