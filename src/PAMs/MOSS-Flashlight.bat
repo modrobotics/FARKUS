@@ -6,7 +6,7 @@ REM C:\Users\jmoyes\Desktop\ModRobotics\GitHub\FARKUS\src\hex\MOSS\flashlight
 
 @ECHO off
 
-TITLE Modular Robotics - MOSS Flashlight v1.0.0 (ATMEGA168V/P)
+TITLE Modular Robotics - MOSS Flashlight v1.0.0
 
 :start
 
@@ -20,7 +20,7 @@ GOTO burnFlash
 
 :burnFlash
 SLEEP 1
-avrdude -p ATtiny13 -P usb -c avrispmkII -b 9600 -U flash:w:C:\Users\jmoyes\Desktop\ModRobotics\GitHub\FARKUS\src\hex\MOSS\flashlight\EYVO_FLASHLIGHT-1.0.0.hex:i > nul 2>&1
+avrdude -p ATtiny13 -P usb -c avrispmkII -b 9600 -U flash:w:C:\Users\jmoyes\Desktop\ModRobotics\GitHub\FARKUS\src\hex\MOSS\flashlight\FLASHLIGHT-1.0.0.hex:i > nul 2>&1
 IF errorlevel 1 GOTO flashError
 GOTO flashBurnSuccess
 

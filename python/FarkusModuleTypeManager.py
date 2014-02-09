@@ -135,6 +135,16 @@ class FarkusModuleTypeManager():
 									  "/src/PAMs/MOSS-Flashlight.bat"))
 		
 		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444446,
+									  "1009",
+									  "MOSS - Spin-Main",
+									  "Spin-main prgm/test",
+									  "Testbed",
+									  "Standalone",
+									  self.serialEventHandlerStandardTestbed,
+									  self.programmerEventHandlerStandardTestbed,
+									  "/src/PAMs/MOSS-Spin-Main.bat"))
+		
+		self.moduleTypes.append(FarkusModuleType.FarkusModuleType(5444447,
 									  "1002",
 									  "MOSS - BT Main",
 									  "Bluetooth Main prgm/test",
