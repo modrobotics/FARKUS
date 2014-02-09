@@ -66,22 +66,11 @@ class FarkusModuleTypeManager():
 			#***************************************
 			
 			elif event.data == "G":
-					print "Programmer Starting..."
-				#try:
+				print "Programmer Starting..."
+				try:
 					event.module.getProgrammerWorker().program(True)
-				#except:
-					#print sys.exc_info()[0]
-			
-			'''
-				if( random.choice([True, False]) ):
-					# Pass
-					print "Programming Successful"
-					event.module.serialWorker.write("P");
-				else:
-					# Failure
-					print "Programming Failed!"
-					event.module.serialWorker.write("F");
-			'''	
+				except:
+					print "An error occured while programming"
 				
 		#except:
 			#print "Connection to " + event.moduleLongName + "(Serial#" + event.module.GetSerialNumber() + ") HAS BEEN LOST2222"

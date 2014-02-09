@@ -57,6 +57,7 @@ ID_OPTIONS_OPENSERIAL = wx.NewId()
 ID_OPTIONS_CLOSESERIAL = wx.NewId()
 ID_OPTIONS_CAROUSEL = wx.NewId()
 ID_OPTIONS_CONNECT_TO_TESTBED = wx.NewId()
+ID_OPTIONS_AUTOCONNECT = wx.NewId()
 ID_OPTIONS_CONNECT_TO_TESTBED_MOSS = wx.NewId()
 ID_OPTIONS_SELECT_MODULE_ANGLEPOT = wx.NewId()
 ID_OPTIONS_SELECT_MODULE_DISTANCE = wx.NewId()
@@ -361,9 +362,15 @@ class MainFrame(wx.Frame):
 		self.connectMenu = wx.Menu()
 		
 		self.connectToTestbedSubMenu = wx.Menu()
-		self.optionsMenu.AppendMenu(ID_OPTIONS_CONNECT_TO_TESTBED, 'Connect to Testbed', self.connectToTestbedSubMenu)
+		
+		self.autoConnect = wx.MenuItem(self.connectToTestbedSubMenu, ID_OPTIONS_AUTOCONNECT, 'AutoConnect to Modules', '')
+		self.optionsMenu.AppendItem(self.autoConnect)
+
 		self.disconnectAll = wx.MenuItem(self.optionsMenu, ID_OPTIONS_CLOSESERIAL, 'Disconnect All', 'Disconnect from the FARKUS Array')
 		self.optionsMenu.AppendItem(self.disconnectAll)
+
+		'''
+		self.optionsMenu.AppendMenu(ID_OPTIONS_CONNECT_TO_TESTBED, 'Connect to Testbed', self.connectToTestbedSubMenu)
 
 		self.connectToTestbedCubeletsSubMenu = wx.Menu()
 		self.connectToTestbedSubMenu.AppendMenu(ID_OPTIONS_CONNECT_TO_TESTBED_CUBELETS, 'Cubelets', self.connectToTestbedCubeletsSubMenu)
@@ -380,42 +387,16 @@ class MainFrame(wx.Frame):
 		self.connectToTestbedCubeletsSubMenu.AppendItem(wx.MenuItem(self.connectToTestbedCubeletsSubMenu, ID_OPTIONS_SELECT_MODULE, 'Legacy: Cubelets Motherboard-A All v11 (ATMEGA168V/P) (Standalone)', ''))
 		self.connectToTestbedCubeletsSubMenu.AppendItem(wx.MenuItem(self.connectToTestbedCubeletsSubMenu, ID_OPTIONS_SELECT_MODULE, 'Legacy: Cubelets Bluetooth v10 Bootloader (ATMEGA162) (Standalone)', ''))
 		self.connectToTestbedCubeletsSubMenu.AppendItem(wx.MenuItem(self.connectToTestbedCubeletsSubMenu, ID_OPTIONS_SELECT_MODULE, 'Legacy: Cubelets Bluetooth v10 Test/Config Routine (ATMEGA162) (Standalone)', ''))
+		'''
 		
 		
-		
-		self.connectToTestbedMossSubMenu = wx.Menu()
-		self.connectToTestbedSubMenu.AppendMenu(ID_OPTIONS_CONNECT_TO_TESTBED_MOSS, 'MOSS', self.connectToTestbedMossSubMenu)
-		
-		self.moduleMossAnglePot = wx.MenuItem(self.connectToTestbedMossSubMenu, ID_OPTIONS_SELECT_MODULE_ANGLEPOT, 'MOSS-Angle  (Angle-Pot)', '')
-		self.connectToTestbedMossSubMenu.AppendItem(self.moduleMossAnglePot)
-		
-		self.moduleMossBTMain = wx.MenuItem(self.connectToTestbedMossSubMenu, ID_OPTIONS_SELECT_MODULE_BTMAIN, 'MOSS-Bluetooth-Main  (Bluetooth-Main)', '')
-		self.connectToTestbedMossSubMenu.AppendItem(self.moduleMossBTMain)
-
-		self.moduleMossDistance = wx.MenuItem(self.connectToTestbedMossSubMenu, ID_OPTIONS_SELECT_MODULE_DISTANCE, 'MOSS-Distance  (Distance)', '')
-		self.connectToTestbedMossSubMenu.AppendItem(self.moduleMossDistance)
-		
-		self.moduleMossFlashlight = wx.MenuItem(self.connectToTestbedMossSubMenu, ID_OPTIONS_SELECT_MODULE_FLASHLIGHT, 'MOSS-Flashlight  (Flashlight)', '')
-		self.connectToTestbedMossSubMenu.AppendItem(self.moduleMossFlashlight)
-		
-		self.moduleMossMicrophone = wx.MenuItem(self.connectToTestbedMossSubMenu, ID_OPTIONS_SELECT_MODULE_MICROPHONE, 'MOSS-Microphone  (Microphone)', '')
-		self.connectToTestbedMossSubMenu.AppendItem(self.moduleMossMicrophone)
-		
-		self.moduleMossSpinMain = wx.MenuItem(self.connectToTestbedMossSubMenu, ID_OPTIONS_SELECT_MODULE_SPINMAIN, 'MOSS-Spin  (Spin-Main)', '')
-		self.connectToTestbedMossSubMenu.AppendItem(self.moduleMossSpinMain)
-		
+				
 		# Create the logger output box
 		#self.logDisplay = wx.TextCtrl(self, id = -1, pos = (10, 375), size = (10, 10), style = wx.TE_MULTILINE|wx.TE_READONLY|wx.TE_AUTO_URL)
 		#self.linesInLogBuffer = 0 # initialize a counter variable
 		
 		# Bind GUI events to their handlers
-		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.moduleMossAnglePot)
-		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.moduleMossBTMain)
-		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.moduleMossDistance)
-		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.moduleMossFlashlight)
-		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.moduleMossMicrophone)
-		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.moduleMossSpinMain)
-		
+		self.Bind(wx.EVT_MENU, self.OnSelectModule, self.autoConnect)
 		self.Bind(wx.EVT_MENU, self.OnCloseSerial, self.disconnectAll)
 	
 		self.quitItem = wx.MenuItem(self.fileMenu, wx.ID_EXIT, '&Quit', 'Exit the Modular Robotics FARKUS Desk')
@@ -454,19 +435,18 @@ class MainFrame(wx.Frame):
 		#	icon1 = wx.Icon(iconFile, wx.BITMAP_TYPE_ICO)
 		#	self.SetIcon(icon1)
 		
-		
-		
-		
 		# Show the application center in the user's screen
 		self.Centre()
 		
 		#self.processGraphicManager.setModuleManager(self.farkusTable.getModuleManager())
 		
-		self.OnSelectModule(False)
-		
 		# Redirect STDOUT, STDERR to our logger now that we've rendered
 		sys.stdout=RedirectSTDOUT_STDERR(self)
 		sys.stderr=RedirectSTDOUT_STDERR(self)
+		
+		# Detect and attach to modules on startup
+		self.OnSelectModule(False)
+
 		
 	def OnSelectModule(self, event):
 		#self.LogToGUI("Searching For Modules....")
