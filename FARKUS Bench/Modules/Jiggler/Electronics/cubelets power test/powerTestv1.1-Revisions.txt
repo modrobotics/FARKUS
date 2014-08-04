@@ -1,0 +1,7 @@
+screw terminal silkscreen must be moved
+
+optical relay land pattern must be narrowed
+
+arduino shield silkscreen must be moved on side with power resistor
+
+add status LEDs for power on and each face active.
