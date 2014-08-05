@@ -7,4 +7,6 @@ FARKUS is more than an assembly robot, it's an ecosystem of simple robots that w
 
 At a basic level, a factory performs a bunch of operations to a bunch of products. The Modular Robotics factory, for instance, uses operations like soldering, ultrasonic welding, programming, testing, and printing to make products like Cubelets and MOSS. FARKUS consists of several parts: movers, to move products through the factory; a collection of modules that perform operations to the products; a control system to manage the ecosystem; and nests to cradle the products as they make their way through a production line.
 
-More info and media at: www.farkus.org
+This repository is pretty rough -- we've dumped files here with only minimal documentation.  We'll update as we make progress and we hope that others will contribute and document.  For now, there are a bunch of Solidworks, Eagle, and code files to peruse along with a few readmes.
+
+More info and media on the wiki at: www.farkus.org
